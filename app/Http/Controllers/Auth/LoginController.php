@@ -7,6 +7,8 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
+use Illuminate\Http\Request;
+
 use Auth;
 
 
@@ -70,4 +72,31 @@ public function _registerOrLoginUser($data)
       //  Auth::login($user);
 
 }
+public function authenticate(Request $request)
+{
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
+
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+
+        return redirect()->intended('home');
+    }
+$user=user::where('email',$request->email)->first();
+if ($user) {
+    # code...
+    return back()->withErrors([
+        'password' => 'Password is not correct',
+
+    ])->onlyInput('email','password');
+}else {
+    return back()->withErrors([
+        'email' => 'The email does not match our records.',
+    ])->onlyInput('email');
+}
+
+}
+
 }

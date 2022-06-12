@@ -10,6 +10,8 @@ use App\Models\Option;
 use App\Models\quiz_question;
 use App\Models\collection_quiz;
 use App\Models\collection;
+use Carbon\Carbon;
+use App\Traits\crudsTraits;
 
 use DB;
 
@@ -17,15 +19,21 @@ use DB;
 use Auth;
 class quizController extends Controller
 {
+    use crudsTraits;
+
 
     public function stepform(Request $request)
     {
 return (dd($request->phone));
     }
     public function show (quiz $quiz)
-    {
+    { $tags=$quiz->tags;
+        $res="";
+        foreach ($tags as $tag) {
+            $res=$res . $tag->name . ",";
+        }
 
-        return view('quiz.show',compact('quiz'));
+        return view('quiz.show',compact('quiz','res'));
     }
     public function search(Request $request)
     {
@@ -50,6 +58,7 @@ and yoc search with filter about
     public function index (Request $request)
     {$user=Auth::user();
         $id=Auth::id();
+        // return dd(Auth::user()->collections);
         $favorite=collection::where(
             ['name'=>'favorite','user_id'=>$id]
         )->first();
@@ -178,9 +187,12 @@ and yoc search with filter about
     public function indexMostResent ()
     {$user=Auth::user();
         $id=Auth::id();
+        $favorite=collection::where(
+            ['name'=>'favorite','user_id'=>$id]
+        )->first();
         $quizs=quiz::where('user_id', Auth::user()->id)->latest()->paginate(20);
        // $quizs=quiz::all();
-        return view ('quiz.index',compact('quizs'));
+        return view ('quiz.index',compact('quizs','favorite'));
 
 
     }
@@ -252,29 +264,45 @@ return redirect()->route('quizs.show',compact('quiz'))->with('success','question
     }
 
     public function saveOtherInfo(Request $request , $id)
-    {
-        $request->validate([
+    {     $request->validate([
+        'title'=>'required',
+        'description'=>'required',
+        // 'visibility'=>'required',
+        // 'image' => 'required',
+         'tags' => 'required',
+        // 'publish'=>'required',
+      ]);
 
-            'visibility'=>'required',
-            'image' => 'required',
-            // 'tags' => 'required',
-
-          ]);
 $quiz=quiz::where('id',$id)->first();
-      $image_extension = $request->image->getClientOriginalExtension();
-     // $quiz->  visibility = request('visibility');
-     // $quiz->image= 'uploads/quiz/' . $filename;
 
-      $image = $request->image;
-      // $image->getClientOriginalName()
-        $filename= time().'.'.$image->getClientOriginalName().$image_extension;
-        $path='uploads/quiz';
-        $request->image->move($path,$filename);
+$quiz -> title = request('title');
+$quiz -> description= request('description');
+$tags = explode(",", $request->tags);
+DB::table('tagging_tagged')->where('taggable_id',$quiz->id)->delete();
+
+if ( $request->image) {
+    // $image_extension = $request->image->getClientOriginalExtension();
+    // // $quiz->  visibility = request('visibility');
+    // // $quiz->image= 'uploads/quiz/' . $filename;
+
+    //  $image = $request->image;
+    //  // $image->getClientOriginalName()
+    //    $filename= time().'.'.$image->getClientOriginalName().$image_extension;
+    //    $path='uploads/quiz';
+    //    $request->image->move($path,$filename);
+  $path=  $this->SaveImage($request->image);
+
+       $quiz->image= $path;
+    }
+
         // $tags = explode(",", $request->tags);
-        $quiz->visibility = request('visibility');
-        $quiz->image= 'uploads/quiz/' . $filename;
-        $quiz -> save();
-        return redirect()->route('quizs.show' ,compact('quiz'))->with('success','quiz added successfully');
+        $quiz->visibility = $request->visibility;
+        $quiz -> update();
+
+        $quiz->tag($tags);
+$quiz -> update();
+        return redirect()->route('quizs.show' ,compact('quiz'))->with('success','quiz updated successfully to add question in your quiz  click       <a href="'. route('quizs.create.posts',$quiz->id) . '">
+        here</a> ');
 
 
 

@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use \Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Carbon\Carbon;
+
 
 class Student extends Model
 {
     use HasFactory;
     protected $table="student";
-    protected $fillable = ['user_id','firstname','lastname','birth_date', 'sex'];
+    protected $fillable = ['user_id','student_id','firstname','lastname','birth_date', 'sex'];
+    public $timestamps = false;
 
 /**
  * Get the user that owns the Student
@@ -21,6 +24,18 @@ class Student extends Model
 public function user(): BelongsTo
 {
     return $this->belongsTo(User::class);
+}
+public function datebirth()
+{
+  return  $this->birth_date;
+}
+
+public function Age()
+{
+  $birth=  Carbon::parse($this->datebirth());
+
+  return $birth->age;
+
 }
 
     public function options()

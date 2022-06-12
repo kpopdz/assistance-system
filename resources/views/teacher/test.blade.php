@@ -7,14 +7,14 @@
 
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Create Question</h5>
+            <h5 class="card-title">Add Question to quiz</h5>
 
             <!-- General Form Elements -->
             <form action="{{route('quizs.test.create')}}" method="post">
                 @csrf
                 <div id="cc2">
                     <div class="row mb-3">
-                        <label for="inputText" class="col-sm-2 col-form-label" >question content</label>
+                        <label for="inputText" class="col-sm-2 col-form-label" >question <span style="color: red">*</span></label>
                         <div class="col-sm-8">
                           <input type="text" class="form-control" name="question" value="{{ old('question') , '' }}">
 
@@ -28,7 +28,7 @@
 
 
                       <div class="row mb-3">
-                        <label for="inputText" class="col-sm-2 col-form-label">option 1</label>
+                        <label for="inputText" class="col-sm-2 col-form-label">option 1 <span style="color: red">*</span></label>
                         <div class="col-sm-7">
                           <input type="text" class="form-control" name="options[]">
 
@@ -41,7 +41,8 @@
                           </div>
                           <div class="col-sm-2">                  <button type="button" name="addAnswer " onclick="addother()" id="addAnswer3" class="btn btn-success">
                             Add Answer
-                        </button></div>
+                        </button>
+</div>
 
                       </div>
                 </div>
@@ -58,6 +59,9 @@
 
               <input type="submit" name="addQuestion" id="addQuestion" class="btn btn-success mb-2 mr-2"
                      value="Add Question"/>
+                     <a href="{{route('quizs.show',$quiz->id)}}" class="btn btn-primary mb-2 mr-2">
+                        {{ __('cancel') }}
+                    </a>
             </form><!-- End General Form Elements -->
 
           </div>
@@ -79,7 +83,7 @@ function addother() {
     try2022.setAttribute("id", "row" + i + "");
 
     try2022.innerHTML=
-               ' <label for="inputText" class="col-sm-2 col-form-label">option'+ i+'</label>'+
+               ' <label for="inputText" class="col-sm-2 col-form-label">option '+ i+'</label>'+
                 '<div class="col-sm-7">'+
                   '<input type="text" class="form-control" name="options[]">'+
 

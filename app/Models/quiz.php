@@ -45,10 +45,34 @@ class quiz extends Model
         return $this->hasMany(Result::class);
 
     }
+    public function resultavg(){
+
+        return $this->result()
+        ->selectRaw('quiz_id, avg(fullpoint) as aggregate')
+        ->groupBy('quiz_id');
+
+    }
+    public function getAvgRatingAttribute()
+{
+    if ( ! array_key_exists('resultavg', $this->relations)) {
+       $this->load('resultavg');
+    }
+
+    $relation = $this->getRelation('resultavg')->first();
+
+    return ($relation) ? $relation->aggregate : null;
+}
     public function question()
 {
     return $this->belongsToMany(question::class,'quiz_question','quiz_id','question_id');
 }
+public function questionsumpoint()
+{
+  return $this->question()
+    ->selectRaw('quiz_id, sum(question_point) as aggregate')
+    ->groupBy('quiz_id');
+}
+
     public function totalPoint()
     {
         return $this->question()->sum('question_point');
@@ -68,6 +92,10 @@ class quiz extends Model
 
         ];
 
+    }
+    public function courses()
+    {
+        return $this->belongsToMany(course::class,'quiz_id','course_id');
     }
 
     public function classes()

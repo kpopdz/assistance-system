@@ -21,6 +21,8 @@
         "sass-loader": "^11.0.1"
     },
     "dependencies": {
-        "@ckeditor/ckeditor5-build-classic": "^34.0.0"
+        "@ckeditor/ckeditor5-build-classic": "^34.0.0",
+        "laravel-echo": "^1.11.7",
+        "pusher-js": "^7.1.1-beta"
     }
 }

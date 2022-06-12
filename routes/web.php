@@ -12,6 +12,10 @@ use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Parent\ParentController;
 use Laravel\Socialite\Facades\Auth\Socialite;
 use App\Http\Controllers\Student\StudentController;
+use App\Events\MyEvent;
+use App\Http\Controllers\HomeController;
+use App\Models\quiz;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -28,10 +32,31 @@ use App\Http\Controllers\Student\StudentController;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/quizs/avg',[TeacherController::class ,'classlevel'])->name('class.level');
+Route::post('/collection/new',[TeacherController::class ,'createcollection'])->name('collection.new.quiz');
+
+
+Route::get('/event', function () {
+event(new MyEvent('this is our app'));
+});
+Route::get('/listen', function () {
+    return view('listen');
+});
+
+Route::post('login/check', [LoginController::class , 'authenticate'])->name("login.new");
+
 Route::get('student/index', [StudentController::class , 'index'])->name("public.quizs");
+Route::get('student/profile', [StudentController::class , 'userprofile'])->name("student.profile");
+Route::post('student/profile/update', [StudentController::class , 'UpdateProfile'])->name("student.profile.update");
+
+
+Route::get('student/publicquizzes', [StudentController::class , 'publicQuizzes'])->name("public.quizs.index");
+
 Route::get('student/quiz/{quiz}/{data2}', [StudentController::class , 'passquiz'])->name('student.pass');
 Route::get('student/result/{id}', [StudentController::class , 'show'])->name('results.show');
 Route::post('student/quiz/answer', [StudentController::class , 'store'])->name('student.answer.test');
+Route::get('student/addtofavorate/{quiz}', [StudentController::class , 'addToFav2'])->name('student.addtofav');
+
 Route::get('student/myresult/{quiz}', [StudentController::class , 'showresult'])->name('myresult');
 
 
@@ -39,6 +64,8 @@ Route::get('quiz/{id}', [quizController::class , 'show']);
 
 Route::get('/index', [quizController::class , 'index']);
 /***********  teacher  ***** */
+Route::get('teacher/view/courses',[TeacherController::class ,'viewcourses'])->name('courses.view');
+
 Route::get('/teacher/test', [quizController::class , 'addibput'])->name('teacher.test');
 Route::post('teacher/quiz/question/store', [quizController::class , 'store5'])->name('quizs.test.create');
 Route::get('/teacher/duplicate/{quiz}', [quizController::class , 'replicate'])->name('quiz.duplicate');
@@ -47,6 +74,21 @@ Route::get('teacher/profile', function () {
 })->name('teacher.profile');
 Route::post('/teacher/post',[TeacherController::class ,'profile'])->name('post.profile.m');
 Route::post('/teacher/createclass',[TeacherController::class ,'CreateClass'])->name('create.class');
+Route::post('/course/upload',[TeacherController::class ,'uploadcourse'])->name('course.uploade');
+Route::delete('/course/{course}/delete',[TeacherController::class ,'deletecourse'])->name('course.delete');
+
+Route::get('/students', [AdminController::class,'studentlist'])->name('students.list');
+
+Route::get('course/upload/page', function () {
+
+    $quizs=quiz::where('user_id', Auth::user()->id)
+    ->where('publish',1)->get();
+    return view('teacher.uploadcourse',compact('quizs'));
+
+})->name('page.upload');
+Route::get('teacher/share-quiz/{quiz}',[TeacherController::class ,'pageshare'])->name('teacher.share');
+Route::post('teacher/share-quiz/post',[TeacherController::class ,'sharequiz'])->name('teacher.share.quiz');
+
 
 Route::get('teacher/myprofile', function () {
     return view('teacher.myprofile');
@@ -55,6 +97,8 @@ Route::get('teacher/myprofile', function () {
 Route::get('/teacher/classes',[TeacherController::class ,'showClasses'])->name('teacher.classes');
 Route::get('/teacher/myquizs',[TeacherController::class ,'MyQuizs'])->name('teacher.myquizs');
 Route::get('/teacher/myquizs/{id}',[TeacherController::class ,'results'])->name('teacher.myquizs.results');
+Route::get('/teacher/quiz/duplicate/{quiz}',[TeacherController::class ,'duplicateQuiz'])->name('teacher.quiz.duplicate');
+
 
 
 /***********teacher */
@@ -65,7 +109,7 @@ Route::get('/parent/results/{id}',[ParentController::class ,'results2'])->name('
 
 
 /***************parent */
-
+Route::get('teacher/view/{course}',[TeacherController::class ,'viewcourse'])->name('course.view');
 
 
 Route::get('/form', [quizController::class , 'form']);
@@ -128,6 +172,9 @@ Route::get('/login/google/callback',[LoginController::class,'hundleGoogleCallbac
 //// teacher/////
 Route::get('/users', [AdminController::class,'index']);
 Route::get('/users/class', [UserController::class,'index2']);
+Route::get('/users/add/', [AdminController::class,'addUser'])->name('add.person');
+Route::post('/users/add/user', [AdminController::class,'create'])->name('add.user');
+
 
 Route::prefix('teacher')->group(function () {
     Route::get('/myquiz',[quizController::class , 'index']);
@@ -157,6 +204,13 @@ Route::post('/quizs/{id}/addinfo',[quizController::class ,'saveOtherInfo'])->nam
 
 Route::get('/teacher/assigne',[TeacherController::class ,'showClasses'])->name('teacher.classes.assigne');
 Route::post('/teacher/assigne/end{id}',[TeacherController::class ,'quizforclass'])->name('classes.assigne.end');
+Route::post('/teacher/live/end{id}',[TeacherController::class ,'liveQuizforclass'])->name('classes.live.end');
+Route::get('/teacher/stat/{quiz}',[TeacherController::class ,'quiz_stat'])->name('quiz.stat');
+Route::get('/stat/list',[TeacherController::class ,'list'])->name('stat.list');
+
 Route::get('/notify',[App\Http\Controllers\HomeController::class ,'notify'])->name('teacher.classes.notify');
+Route::get('/markasread/{id}', [StudentController::class , 'markasread'])->name("markasread");
+
+
 
 

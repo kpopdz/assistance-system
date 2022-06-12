@@ -10,6 +10,22 @@ use DB;
 
 class UserController extends Controller
 {
+    public function handleLogin(Request $request)
+    {
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            Auth::user();
+            if (Auth::check()) {
+
+                alert()->success('Succés!', 'Bienvenue!');
+                return redirect()->route('home');
+            } else {
+                alert()->error('Oups!', 'Email ou Mot de passe incorrect !');
+                return redirect()->back();
+            }
+
+        }
+
+    }
     public function index ()
     {
      //   $users=user::all();

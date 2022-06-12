@@ -10,7 +10,7 @@
 
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Create Question</h5>
+        <h5 class="card-title">Edit Question</h5>
 
         <!-- General Form Elements -->
         <form action="{{route('question.update',[$quiz->id,$question->id])}}" method="post">
@@ -34,7 +34,6 @@
                   @php
                   $i=0;
               @endphp
-              {{count($question->option)}}
               @foreach ($question->option as $option)
               @php
               $i++;
@@ -75,8 +74,16 @@
 
 
 <div class="row mb-3 justify-content-center">
-    <div class="col-sm-2"><input type="submit" value="Update" class="btn btn-success mb-2 mr-2"
-        /></div><div class="col-sm-2">                  <button type="button" name="addAnswer " onclick="addother()" id="addAnswer3" class="btn btn-success">
+    <div class="col-sm-6">
+        <input type="submit" value="Update" class="btn btn-success mb-2 mr-2"
+        />
+        <a href="{{route('quizs.show',$quiz->id)}}" class="btn btn-primary mb-2 mr-2">
+            {{ __('cancel') }}
+        </a></div>
+
+
+
+        <div class="col-sm-2">                  <button type="button" name="addAnswer " onclick="addother()" id="addAnswer3" class="btn btn-success">
     Add Answer
 </button></div>
 
@@ -107,7 +114,7 @@ try2022.setAttribute("class", "row mb-3 q y");
 try2022.setAttribute("id", "row" + j + "");
 
 try2022.innerHTML=
-           ' <label for="inputText" class="col-sm-2 col-form-label">option'+ j+'</label>'+
+           ' <label for="inputText" class="col-sm-2 col-form-label">option '+ j+'</label>'+
             '<div class="col-sm-7">'+
               '<input type="text" class="form-control" name="newoptions[]">'+
 

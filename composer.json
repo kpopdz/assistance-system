@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "beyondcode/laravel-websockets": "^1.13",
         "guzzlehttp/guzzle": "^7.2",
         "http-interop/http-factory-guzzle": "^1.2",
         "laravel/framework": "^9.2",
@@ -16,6 +17,8 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^3.4",
         "meilisearch/meilisearch-php": "^0.23.1",
+        "monarobase/country-list": "^3.3",
+        "pusher/pusher-php-server": "^7.0",
         "rtconner/laravel-tagging": "^4.1"
     },
     "require-dev": {

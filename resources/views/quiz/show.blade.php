@@ -18,12 +18,21 @@ font-family: Roboto-light;
 text-transform: uppercase;
 
 }
-
+.bootstrap-tagsinput .tag {
+            margin-right: 2px;
+            color: #ffffff;
+            background: #2196f3;
+            padding: 3px 7px;
+            border-radius: 3px;
+        }
+        .bootstrap-tagsinput {
+            width: 100%;
+        }
 </style>
 @if ($message=Session::get('success'))
 <div class="alert alert-success alert-dismissible fade show mt-5" role="alert">
     <i class="bi bi-check-circle me-1"></i>
-    {{$message}}
+    {!!$message!!}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
  @endif
@@ -157,18 +166,17 @@ border-bottom-right-radius: 29px;"
         <div class="card">
           <div class="card-body">
 
-            <h5 class="card-title">information</h5>
+            <h5 class="card-title">Quick information</h5>
            @if ($quiz->image ==null)
            <button class="upload_image">
             <div class="size-image">                <i class="bi bi-image-fill"></i>
             </div>
-            <span class="text-image">Click here to upload a quiz image</span>
         </button>
            @else
            <img id="" src="{{url($quiz->image)}}" alt="" class="img-fluid" style="z-index: 1000;">
 
            @endif
-        <h3> title : {{$quiz->title}}</h3>
+        <h2 class="mt-4">  {{$quiz->title}}</h3>
         <div>
             {!! $quiz->description !!}
         </div>
@@ -176,13 +184,13 @@ border-bottom-right-radius: 29px;"
 
             <!-- Vertically centered Modal -->
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#verticalycentered">
-                add
+                Edit
            </button>
             <div class="modal fade" id="verticalycentered" tabindex="-1">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title">add info</h5>
+                    <h5 class="modal-title">Update</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
@@ -190,18 +198,25 @@ border-bottom-right-radius: 29px;"
                         @csrf
                            @method('POST')
                         <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label">info</label>
                             <div class="col-sm-10">
                     <div  class="upload_image mb-3" id="default-image" onclick="defaultBtnActive()">
+                        @if ($quiz->image !== null)
+                        <img id="new-image" src="{{url($quiz->image)}}" alt="" class="img-fluid" style="z-index: 1000;">
+                        </div>
+                        <span class="text-image mb-3"></span>
+                        @else
                         <img id="new-image" src="" alt="" class="img-fluid" style="z-index: 1000;">
                         <div class="size-image" id="back-image">                <i class="bi bi-image-fill"></i>
                         </div>
-                        <span class="text-image mb-3">Click here to upload a quiz image</span>
+                        <span class="text-image mb-3"></span>
+                        @endif
+
                     </div>
 
                       <div class="mb-3">
 
                         <input class="form-control d-none" type="file" id="up-quiz-image" name="image">
+
                         <script>
 
                             const defImg= document.querySelector("#default-image");
@@ -229,25 +244,65 @@ border-bottom-right-radius: 29px;"
                         </script>
 
                       </div>
-                      <div class="form-floating mb-3">
-                        <select class="form-select" name="visibility" id="floatingSelect" aria-label="Floating label select example">
-                          <option selected="">choose type</option>
-                          <option value="Public">public</option>
-                          <option value="Private">private</option>
+                      <div class="row mb-3">
+                        <label for="title" class="col-sm-3 col-form-label">Name :<span style="color:red">*</span></label>
+                        <div class="col">
+                          <input type="text"name="title" id="username" class="form-control" value="{{$quiz->title}}">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <label for="tags" class="col-sm-3 col-form-label">Tags :</label>
+                        <div class="col-sm-9">
+                          <input type="text"data-role="tagsinput" name="tags" class="form-control tags" value="{{$res}}">
+                        </div>
+                      </div>
+
+
+
+
+
+
+                      <div class="row mb-3">
+                        <label for="inputPassword" class="col-sm-3 col-form-label">Summary :</span></label>
+                        <div class="col-sm-9">
+                            <textarea name="description" id="position" >{{$quiz->description}}</textarea>
+
+                        </div>
+                      </div>
+                      <div class="d-flex col justify-content-between">
+                        <label for="floatingSelect">Visiblity :</label>
+
+                      <div class="form-floating mb-3 col-9 " >
+
+                        <select class="form-select  " name="visibility" id="floatingSelect" aria-label="Floating label select example">
+                          <option >choose type</option>
+                          <option value="Public" {{ old('visibility', $quiz->visibility) == 'Public' ? 'selected' : ''}}>public</option>
+                          <option value="Private" {{ old('visibility', $quiz->visibility) == 'Private' ? 'selected' : ''}}>private</option>
                         </select>
                         <label for="floatingSelect">visiblity</label>
                       </div>
                     </div>
                     </div>
+                    </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                   </div>
                                 </div>
 
                     </form>
                 </div>
               </div>
+              <script>
+                ClassicEditor
+                    .create( document.querySelector( '#position' ) )
+                    .catch( error => {
+                        console.error( error );
+                    } );
+            </script>
+
+             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+             <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js"></script>
             </div><!-- End Vertically centered Modal-->
 
           </div>

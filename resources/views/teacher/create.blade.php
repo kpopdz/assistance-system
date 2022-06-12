@@ -14,23 +14,23 @@
             width: 100%;
         }
 </style>
-<div class="col-lg-7 m-auto ">
+<div class="col-lg-8 m-auto ">
 
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title text-center">Create quiz</h5>
+        <h5 class="card-title text-center">Create a new quiz</h5>
 
         <!-- General Form Elements -->
         <form action="{{route('quizs.store')}}" class="form" method="POST" enctype="multipart/form-data">
         @csrf
           <div class="row mb-3">
-            <label for="title" class="col-sm-3 col-form-label">title</label>
+            <label for="title" class="col-sm-3 col-form-label">Give the quiz a name <span style="color:red">*</span></label>
             <div class="col-sm-9">
               <input type="text"name="title" id="username" class="form-control">
             </div>
           </div>
           <div class="row mb-3">
-            <label for="tags" class="col-sm-3 col-form-label">tags</label>
+            <label for="tags" class="col-sm-3 col-form-label">Select appropriate tags</label>
             <div class="col-sm-9">
               <input type="text"data-role="tagsinput" name="tags" class="form-control tags">
             </div>
@@ -42,7 +42,7 @@
 
 
           <div class="row mb-3">
-            <label for="inputPassword" class="col-sm-3 col-form-label">description</label>
+            <label for="inputPassword" class="col-sm-3 col-form-label">Include a summary : </label>
             <div class="col-sm-9">
               <textarea class="form-control" name="description" id="position" style="width: 300px;"></textarea>
             </div>
@@ -52,7 +52,7 @@
 
           <div class="row mb-3  text-center">
             <div class="col-sm-12">
-              <button type="submit" class="btn btn-primary ">Save</button>
+              <button type="submit" class="btn btn-primary ">Next</button>
               <a href="{{route('quizs.index')}}" class="btn btn-danger ">cancel</a>
 
             </div>
@@ -71,6 +71,8 @@
         .catch( error => {
             console.error( error );
         } );
+
+
 </script>
 
 <script>const prevBtns = document.querySelectorAll(".btn-prev");

@@ -25,6 +25,15 @@ class User extends Authenticatable implements MustVerifyEmail
         'google_id',
         'role',
     ];
+    /**
+     * Get all of the comments for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function courses(): HasMany
+    {
+        return $this->hasMany(course::class);
+    }
 /**
  * Get all of the comments for the User
  *
@@ -50,10 +59,20 @@ public function student(): HasOne
 public function results() {
     return $this->hasMany('App\Result', 'user_id', 'id');
 }
+public function collections()
+{
+    return $this->hasMany(collection::class, 'user_id', 'id');
+}
+/**
+ * Get all of the comments for the User
+ *
+ * @return \Illuminate\Database\Eloquent\Relations\HasMany
+ */
 
 public function quizCount() {
     return $this->results()->count();
 }
+
 public function classes()
 {
     return $this->belongsToMany(Classroom::class,'class_user','user_id','class_id');

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.teacher')
 
 @section('content')
 <div class="container">
@@ -40,9 +40,12 @@
 
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Send Password Reset Link') }}
+                                <button type="submit" class="btn btn-success">
+                                    {{ __('Continue') }}
                                 </button>
+                                <a href="/login" class="btn btn-primary">
+                                    {{ __('Back to Login') }}
+                                </a>
                             </div>
                         </div>
                     </form>

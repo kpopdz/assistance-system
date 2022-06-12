@@ -106,6 +106,40 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
       </div>
     </div>
     </div> --}}
+                            <!-- Disabled Backdrop Modal -->
+                        {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#disablebackdrop5">
+                          assign
+                        </button> --}}
+                        <div class="modal fade" id="disablebackdrop5" tabindex="-1" data-bs-backdrop="false">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title">add quiz to new collection</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                <form action="{{route('collection.new.quiz')}}" method="post">
+                                    @csrf
+                                    @method('POST')
+                                    <form class="row g-3">
+                                        <div class="col-md-12">
+                                          <div class="form-floating">
+                                              <input type="hidden" name="quiz_id" value="{{$item->id}}">
+                                            <input type="text" class="form-control" id="floatingName" name="collection_name" placeholder="Your Name">
+                                            <label for="floatingName">Collection name</label>
+                                          </div>
+                                        </div>
+
+                            </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button  type="submit" class="btn btn-primary">Save changes</button>
+                              </div>
+                            </form>
+
+                            </div>
+                          </div>
+                        </div><!-- End Disabled Backdrop Modal-->
     <div class="modal fade" id="verticalycentered" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
@@ -196,7 +230,7 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
                     </div>
 
                     @if ($item->publish==1)
-                    <div class="position-absolute  top-0 end-0">
+                    <div class="position-absolute  top-0 end-0 d-flex">
                         <!-- Disabled Backdrop Modal -->
                         {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#disablebackdrop">
                           assign
@@ -264,15 +298,33 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
                               </div>
                             </div>
                           </div>
-                        <div class="dropdown">
+                        <div class="dropdown me-2">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                              assign to
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <ul class="dropdown-menu " aria-labelledby="dropdownMenuButton1">
                               <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#disablebackdrop">class</button>
 
                             </li>
                               <li><a class="dropdown-item" href="#">sub-group</a></li>
+                            </ul>
+                          </div>                        <div class="me-2 dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                             add to collection
+                            </button>
+                            <ul class="dropdown-menu " aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item border-bottom" href="#" data-bs-toggle="modal" data-bs-target="#disablebackdrop5">new collection</a></li>
+                                @php
+                                    $collections=Auth::user()->collections;
+                                @endphp
+@foreach (  $collections as $coll)
+
+
+                              <li>
+                                  <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#disablebackdrop">{{$coll->name}}</button>
+
+                            </li>
+                            @endforeach
                             </ul>
                           </div>
                               </div>

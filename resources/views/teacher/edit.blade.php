@@ -282,5 +282,15 @@
       progress.style.width =
         ((progressActive.length - 1) / (progressSteps.length - 1)) * 100 + "%";
     }</script>
+              <script>
+                ClassicEditor
+                    .create( document.querySelector( '#position' ) )
+                    .catch( error => {
+                        console.error( error );
+                    } );
+            </script>
 
+             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+             <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js"></script>
+            </div>
 @endsection

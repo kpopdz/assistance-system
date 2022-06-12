@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.teacher')
 <style>
     /* body{background-color: #e5e5f7;
 opacity: 0.2;
@@ -41,8 +41,36 @@ background-size: 115px 115px, 115px 115px, 57.5px 57.5px, 57.5px 57.5px;} */
             min-width: 1.5em;
             padding: .25em;
             text-align: center
-        }</style>
+        }
+        .size-back-image{width: 340px;
+        height: 127.33px;}</style>
 @section('content')
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 gutters-sm">
+        @foreach ($results as $item)
+
+         <div class="col mb-3">
+            <div class="card">
+              <img src="{{ url('icons/aqua-d9b59c89.png')}}" alt="Cover" class="card-img-top size-back-image">
+              <div class="card-body text-center">
+                <img src="{{ url('icons/person.svg')}}" style="width:100px;margin-top:-65px" alt="User" class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
+                <h5 class="card-title">{{$item->user->student->firstname}} {{$item->user->student->lastname}}</h5>
+                <p class="text-secondary mb-1">{{$item->class_name}}</p>
+                <h5>points earned from quiz</h5>
+
+                <div class="progress mt-3 " style="height: 20px;">
+                    <div class="progress-bar
+                     {{(($item->fullpoint)/($item->quiz->totalPoint())*100) <50 ? 'progress-bar-striped bg-danger' : 'progress-bar-striped bg-success'}} " role="progressbar"
+                     style="width: {{($item->fullpoint)/($item->quiz->totalPoint())*100}}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{($item->fullpoint)/($item->quiz->totalPoint())*100}}%</div>
+                  </div>            </div>
+              <div class="card-footer">
+                <div class="d-grid gap-2 mt-3">
+                    <a type="button" href="{{ route('results.show',$item->id)}}" class="btn btn-outline-success btn-sm">Result</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          @endforeach
+      </div>
 <div class="container" style="padding-top: 2% ">
 
        @if ($message=Session::get('success'))
@@ -54,7 +82,7 @@ background-size: 115px 115px, 115px 115px, 57.5px 57.5px, 57.5px 57.5px;} */
 
        </div>
 
-  <div class="container" style="padding-top: 2%">
+  {{-- <div class="container" style="padding-top: 2%">
 
 
 <table class="table" >
@@ -77,7 +105,7 @@ background-size: 115px 115px, 115px 115px, 57.5px 57.5px, 57.5px 57.5px;} */
   @foreach ($results as $item)
 
   <tbody><tr>
-      <th scope="row" >
+      <th scope="row" ><img src="{{ url('icons/person.svg')}}" alt="">
           </th>
       <td >{{$item->quiz_id}}</td>
       <td >{{$item->user->student->firstname}} {{$item->user->student->lastname}}</td>
@@ -106,7 +134,7 @@ background-size: 115px 115px, 115px 115px, 57.5px 57.5px, 57.5px 57.5px;} */
 
 </table>
 <div class="d-flex justify-content-center">
-</div></div>
+</div></div> --}}
 
 
 @endsection

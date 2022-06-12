@@ -10,6 +10,7 @@ class parents extends Model
     use HasFactory;
     protected $table = 'parents';
 
+    protected $fillable =['user_id','full_name','phone_number'];
     public $timestamps = false;
 
     public function user(): BelongsTo

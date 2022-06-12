@@ -18,14 +18,15 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
-  <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
-  <link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-  <link href="/assets/vendor/remixicon/remixicon.css/" rel="stylesheet">
-  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+  <link href="{{asset('assets/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+  <link href="{{asset('assets/vendor/bootstrap-icons/bootstrap-icons.css')}}" rel="stylesheet">
+  <link href="{{asset('assets/vendor/boxicons/css/boxicons.min.css')}}" rel="stylesheet">
+  <link href="{{asset('assets/vendor/quill/quill.snow.css')}}" rel="stylesheet">
+  <link href="{{asset('assets/vendor/quill/quill.bubble.css')}}" rel="stylesheet">
+  <link href="{{asset('assets/vendor/remixicon/remixicon.css')}}" rel="stylesheet">
+  <link href="{{asset('assets/vendor/simple-datatables/style.css')}}" rel="stylesheet">
   <link href="{{ asset('css/quiz.css') }}" rel="stylesheet">
+
 
   <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
 
@@ -72,14 +73,14 @@
         </a>
       </li><!-- End Search Icon-->
 
-      <li class="nav-item dropdown">
+      <li class="nav-item dropdown dropdown-notifications">
 
         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
           <i class="bi bi-bell"></i>
-          <span class="badge bg-primary badge-number">4</span>
+          <span class="badge bg-primary badge-number" data-count="{{Auth::user()->unreadnotifications->count()}}">{{Auth::user()->unreadnotifications->count()}}</span>
         </a><!-- End Notification Icon -->
 
-        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications notif-real">
           <li class="dropdown-header">
             You have 4 new notifications
             <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
@@ -87,54 +88,86 @@
           <li>
             <hr class="dropdown-divider">
           </li>
+@forelse (Auth::user()->unreadnotifications as $notification)
+<li class="notification-item">
+    <i class="bi bi-exclamation-circle text-warning"></i>
+    <div>
+      <h4>assigned quiz to you</h4>
+      <p>the teacher {{$notification->data['name']}} assigned quiz {{$notification->data['title']}} to you click
+    here to redirect to the <a href="{{route('markasread',$notification->id)}}">quiz</a>  </p>
+      <p>{{Carbon\Carbon::parse($notification->created_at)->diffForHumans()}}</p>
+    </div>
+  </li>
 
-          <li class="notification-item">
-            <i class="bi bi-exclamation-circle text-warning"></i>
-            <div>
-              <h4>Lorem Ipsum</h4>
-              <p>Quae dolorem earum veritatis oditseno</p>
-              <p>30 min. ago</p>
-            </div>
-          </li>
+  <li>
+    <hr class="dropdown-divider">
+  </li>
+@empty
+<li class="notification-item">
+    <i class="bi bi-exclamation-circle text-warning"></i>
+    <div>
+      <h4>nothening</h4>
 
-          <li>
-            <hr class="dropdown-divider">
-          </li>
+    </div>
+  </li>
 
-          <li class="notification-item">
-            <i class="bi bi-x-circle text-danger"></i>
-            <div>
-              <h4>Atque rerum nesciunt</h4>
-              <p>Quae dolorem earum veritatis oditseno</p>
-              <p>1 hr. ago</p>
-            </div>
-          </li>
+  <li>
+    <hr class="dropdown-divider">
+  </li>
+@endforelse
+{{-- <li class="notification-item">
+    <i class="bi bi-exclamation-circle text-warning"></i>
+    <div>
+      <h4>Lorem Ipsum</h4>
+      <p>Quae dolorem earum veritatis oditseno</p>
+      <p>30 min. ago</p>
+    </div>
+  </li>
 
-          <li>
-            <hr class="dropdown-divider">
-          </li>
+  <li>
+    <hr class="dropdown-divider">
+  </li>
 
-          <li class="notification-item">
-            <i class="bi bi-check-circle text-success"></i>
-            <div>
-              <h4>Sit rerum fuga</h4>
-              <p>Quae dolorem earum veritatis oditseno</p>
-              <p>2 hrs. ago</p>
-            </div>
-          </li>
+  <li class="notification-item">
+    <i class="bi bi-x-circle text-danger"></i>
+    <div>
+      <h4>Atque rerum nesciunt</h4>
+      <p>Quae dolorem earum veritatis oditseno</p>
+      <p>1 hr. ago</p>
+    </div>
+  </li>
 
-          <li>
-            <hr class="dropdown-divider">
-          </li>
+  <li>
+    <hr class="dropdown-divider">
+  </li>
 
-          <li class="notification-item">
-            <i class="bi bi-info-circle text-primary"></i>
-            <div>
-              <h4>Dicta reprehenderit</h4>
-              <p>Quae dolorem earum veritatis oditseno</p>
-              <p>4 hrs. ago</p>
-            </div>
-          </li>
+  <li class="notification-item">
+    <i class="bi bi-check-circle text-success"></i>
+    <div>
+      <h4>Sit rerum fuga</h4>
+      <p>Quae dolorem earum veritatis oditseno</p>
+      <p>2 hrs. ago</p>
+    </div>
+  </li>
+
+  <li>
+    <hr class="dropdown-divider">
+  </li>
+
+  <li class="notification-item">
+    <i class="bi bi-info-circle text-primary"></i>
+    <div>
+      <h4>Dicta reprehenderit</h4>
+      <p>Quae dolorem earum veritatis oditseno</p>
+      <p>4 hrs. ago</p>
+    </div>
+  </li> --}}
+
+
+
+
+
+
 
           <li>
             <hr class="dropdown-divider">
@@ -216,7 +249,14 @@
       <li class="nav-item dropdown pe-3">
 
         <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-          <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+            @if (Auth::user()->avatar)
+            <img src="{{url(Auth::user()->avatar)}}" alt="Profile" class="rounded-circle">
+
+
+            @else
+            <img src="{{url('icons/Account-Avatar.png')}}" alt="Profile" class="rounded-circle">
+
+            @endif
           <span class="d-none d-md-block dropdown-toggle ps-2"> {{ Auth::user()->name }}
           </span>
         </a><!-- End Profile Iamge Icon -->
@@ -231,7 +271,11 @@
           </li>
 
           <li>
-            <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+
+
+            <a class="dropdown-item d-flex align-items-center" href="
+            {{Auth::user()->role=="student" ? route('student.profile') : 'users-profile.html' }}
+            ">
               <i class="bi bi-person"></i>
               <span>My Profile</span>
             </a>
@@ -314,11 +358,22 @@
       <span>My Quizs</span>
     </a>
   </li>
-</ul>
-<li class="nav-item">
-    <a class="nav-link {{Route::is('home') ? '' : 'collapsed' }}  " href="{{ route('teacher.profile')}}">
+  <li class="nav-item">
+    <a class="nav-link {{Route::is('teacher.myquizs') ? '' : 'collapsed' }}  " href="{{ route('teacher.myquizs')}}">
       <i class="bi bi-grid"></i>
-      <span>my favorite</span>
+      <span>assigned quizs</span>
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {{Route::is('stat.list') ? '' : 'collapsed' }}  " href="{{ route('stat.list')}}">
+      <i class="bi bi-grid"></i>
+      <span>View analysis reports & Statistics</span>
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {{Route::is('courses.view') ? '' : 'collapsed' }}  " href="{{ route('courses.view')}}">
+      <i class="bi bi-grid"></i>
+      <span>view my courses</span>
     </a>
   </li>
   <li class="nav-item">
@@ -333,7 +388,11 @@
       <span>PRofile</span>
     </a>
   </li>
+
+</ul>
+
 @endif
+
 @if (Auth::user()->role=="student")
 <ul class="sidebar-nav" id="sidebar-nav">
 
@@ -349,9 +408,9 @@
       </li>
 
   <li class="nav-item">
-    <a class="nav-link {{Route::is('home') ? '' : 'collapsed' }}  " href="{{ route('teacher.profile')}}">
+    <a class="nav-link {{Route::is('public.quizs.index') ? '' : 'collapsed' }}  " href="{{ route('public.quizs.index')}}">
       <i class="bi bi-grid"></i>
-      <span>PRofile</span>
+      <span>public quizs</span>
     </a>
   </li>
   <li class="nav-item">
@@ -392,6 +451,27 @@
     <a class="nav-link {{Route::is('quizs.index') ? '' : 'collapsed' }}" href="{{ route('quizs.index')}}">
       <i class="bi bi-grid"></i>
       <span>My Quizs</span>
+    </a>
+  </li>
+</ul>
+
+
+@endif
+@if (Auth::user()->role=="admin")
+<ul class="sidebar-nav" id="sidebar-nav">
+
+
+
+  <li class="nav-item">
+    <a class="nav-link {{Route::is('add.person') ? '' : 'collapsed' }}  " href="{{ route('add.person')}}">
+      <i class="bi bi-grid"></i>
+      <span>Add person</span>
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {{Route::is('quizs.index') ? '' : 'collapsed' }}" href="{{ route('quizs.index')}}">
+      <i class="bi bi-grid"></i>
+      <span>create classes</span>
     </a>
   </li>
 </ul>
@@ -659,6 +739,20 @@
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://js.pusher.com/7.1/pusher.min.js"></script>
+  <script>
+Pusher.logToConsole = true;
+
+var pusher = new Pusher('f7375d4f2203ec0c9b5b', {
+  cluster: 'eu'
+});
+
+var channel = pusher.subscribe('my-channel');
+channel.bind('my-event', function(data) {
+  alert(JSON.stringify(data));
+});
+  </script>
   <script src="{{asset('assets/vendor/apexcharts/apexcharts.min.js')}}"></script>
   <script src="{{asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
   <script src="{{asset('assets/vendor/chart.js/chart.min.js')}}"></script>
@@ -670,6 +764,7 @@
 
   <!-- Template Main JS File -->
   <script src="{{asset('assets/js/main.js')}}"></script>
+  <script src="{{asset('/js/pusherNotifications.js')}}"></script>
 
 </body>
 

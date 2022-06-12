@@ -46,37 +46,7 @@ border-radius: 20px;
  </div>
  @endif
 <div class="row justify-content-center">
-    <div class="search-flex col-xl-9 d-flex justify-content-between">
-        <div class="d-flex">
-            <form action="{{route('quizs.index')}}" method="get" class="d-flex justify-content-between">
-                <div class="position-relative col-9">
-                    <input type="search" name="query" id="query" placeholder="search a quiz you create" class="quiz-search ms-1">
-                    <button class="button-search position-absolute end-0 top-0"><i class="bi bi-search"></i></button>
 
-                </div>
-
-
-                <div class="col-4 ms-1">                <select id="inputState" class="form-select ms-1" name="visibility">
-                    <option value="">Choose visibility</option>
-                    <option value="Private">private</option>
-                    <option value="Public">public</option>
-                  </select></div>
-
-                  <div class="col-3 ms-1">                <select id="inputState" class="form-select ms-1" name="order">
-                    <option value="">sort by</option>
-                    <option value="asc">ASC</option>
-                    <option value="desc">DESC</option>
-                  </select></div>
-
-
-
-            </form>
-        </div>
-    <div><a href="{{route('quiz.recent')}}" class="btn btn-outline-primary" >most recent</a></div>
-
-
-
-    </div>
 
 
 <div class="col-xl-8">
@@ -181,9 +151,10 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
 
 
                     </a>
-                    <a style="border: 1px solid #0000004e; border-radius: 10px;" href="" class="text-black p-1 mx-1" >
+                    <a style="border: 1px solid #0000004e; border-radius: 10px;" href="{{route('teacher.share',$quiz->id)}}" class="text-black p-1 mx-1" >
+
                         <i class="bi bi-save2"></i>
-                                                <span class="button-info">Like</span>
+                                                <span class="button-info">share</span>
 
 
                     </a>
@@ -214,6 +185,8 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
                             </div>
                           </div>
                         </div><!-- End Disabled Backdrop Modal--> --}}
+
+
                         <div class="modal fade" id="disablebackdrop" tabindex="-1" data-bs-backdrop="false">
                             <div class="modal-dialog">
                               <div class="modal-content">
@@ -260,17 +233,67 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
                               </div>
                             </div>
                           </div>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                             assign to
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                              <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#disablebackdrop">class</button>
+                          {{--  --}}
+                          <div class="modal fade" id="disablebackdrop3" tabindex="-1" data-bs-backdrop="false">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Schedule live quiz to class</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{route('classes.live.end',$quiz->id)}}" method="post">
+                                        @csrf
+                                        @method('POST')
+                                        <div class="row mb-3">
+                                            <label class="col-sm-3 col-form-label">class</label>
+                                            <div class="col-sm-9">
+                                              <select class="form-select"name="class_id[]" multiple="true" aria-label="multiple select example">
 
-                            </li>
-                              <li><a class="dropdown-item" href="#">sub-group</a></li>
-                            </ul>
+
+
+                                        @foreach (Auth::user()->classes as $class)
+
+                                        <option value="{{$class->id }}">{{$class->class_name }}</option>
+
+                                    {{-- {{$class->users->count() }} --}}
+                                    @endforeach
+                                </select>
+                            </div>
                           </div>
+                          <div class="row mb-3">
+                            <label for="text-l" class="col-sm-3 col-form-label">code enter</label>
+                            <div class="col-sm-9">
+                              <input type="text" name="code_enter" class="form-control">
+                            </div>
+                          </div>
+                          <div class="row mb-3">
+                            <label for="inputDate" class="col-sm-3 col-form-label">duration</label>
+                            <div class="col-sm-9">
+                              <input type="number" name="duration" class="form-control" placeholder="enter only number (minutes)">
+                            </div>
+                          </div>
+                          <div class="row mb-3">
+                            <label for="inputDate" class="col-sm-3 col-form-label">Start time</label>
+                            <div class="col-sm-9">
+                              <input type="datetime-local" name="start_time" class="form-control">
+                            </div>
+                          </div>
+                                    {{-- <input type="datetime-local" name="dead_line" id="">
+                                    <input type="submit" value="create" class="btn btn-success"> --}}
+
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        {{--  --}}
+
                               </div>
                     @endif
 
@@ -286,8 +309,36 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
   </div>
 
 
+  <div class="col-lg-7 ">
+<div class="d-flex justify-content-between">
+    <div class="col-sm-6">    <div class="dropdown me-2">
+        <button
+        style="width: -moz-available;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+        assign as homework to
+        </button>
+        <ul class="dropdown-menu " aria-labelledby="dropdownMenuButton1">
+        <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#disablebackdrop">class</button>
 
+        </li>
+        <li><a class="dropdown-item" href="#">sub-group</a></li>
+        </ul>
+        </div></div>
+        <div class="col-sm-6">    <div class="dropdown me-2">
+        <button
+        style="width: -moz-available;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+        live quiz to
+        </button>
+        <ul class="dropdown-menu " aria-labelledby="dropdownMenuButton1">
+        <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#disablebackdrop3">class</button>
+
+        </li>
+        <li><a class="dropdown-item" href="#">sub-group</a></li>
+        </ul>
+        </div></div>
 </div>
+</div>
+</div>
+
 
 {{-- <div class="container" style="padding-top: 2%"> --}}
     <!--<ul class="nav nav-pills container" id="pills-tab" role="tablist">
