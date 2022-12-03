@@ -48,6 +48,22 @@
     </select>
 </div>
 </div>
+<div class="row mb-3">
+    <label class="col-sm-2 col-form-label">indicate classroom</label>
+    <div class="col-sm-10">
+      <select class="form-select"name="class_id">
+
+
+
+@foreach ($classes as $class)
+
+<option value="{{$class->class_id }}">{{$class->class_name }}</option>
+
+{{-- {{$class->users->count() }} --}}
+@endforeach
+</select>
+</div>
+</div>
 
             <div class="row mb-3">
               <label class="col-sm-2 col-form-label">Submit Button</label>

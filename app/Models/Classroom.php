@@ -20,6 +20,10 @@ public function quizs()
 {
     return $this->belongsToMany(quiz::class,'assignment','class_id','quiz_id');
 }
+public function teachers()
+{
+    return $this->belongsToMany(Teacher::class,'class_teacher','class_id','teacher_id');
+}
 
 
 }

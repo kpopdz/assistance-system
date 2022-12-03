@@ -102,7 +102,7 @@ font-size: 27px
 <div>
 
 
-{{-- <div id="app"></div> --}}
+<div id="app"></div>
 
 
     <p id="demo"></p>
@@ -114,10 +114,20 @@ font-size: 27px
            $i=1;
 
     @endphp
+       <div class="top-quiz justify-content-end d-none" style="color: greenyellow">
+       <span class="me-2">score </span>   <span id="score" class="me-1"> </span>/{{$quiz->question->count()}}
+
+    </div>
     <form action="{{route('student.answer.test')}}" method="post" id="save-quiz">
         @csrf
         @method('POST')
         <input type="hidden" name="quiz_id" value="{{$quiz->id}}">
+        <input type="hidden" id="removeopt" name="remove_option" value="{{$remove->count}}">
+
+        <input type="hidden" id="hintcount" name="hint_option" value="{{$hints->count}}">
+        <input type="hidden" id="points" name="point_count" value="{{Auth::user()->student->points->points}}">
+
+
         @foreach ($quiz->question as $question)
 
 
@@ -125,11 +135,19 @@ font-size: 27px
                  {{-- d-none --}}
 
                  <div class="quiz active">
+
                      <div class="top-quiz">
-                         <h1>{{$question->question_content}}</h1>
+                        {{-- @if (Auth::user()->student->badge->count>=1)
+<button class="btn btn-primary " style="position: absolute; top:200px;right:40px" onclick="">
+remove option
+</button>
+@endif --}}
+
+<div class="d-flex"><h1 class=" me-3">{{$question->question_content}}</h1> <span class="d-none show-hint me-3">{{$question->hint}}</span></div>
                      </div>
-                        <input type="hidden" name="question_id[]" value="{{$question->id}}">
-                     <div class="middle-quiz">
+                        <input type="hidden" name="question_id[]" value="{{$question->id}}" class="question">
+                     <div class="middle-quiz question">
+
                          @foreach ($question->option as $option)
                          <label class="options-element" style="position: relative" for="{{$option->id}}">
                             <div  id="">
@@ -147,16 +165,31 @@ font-size: 27px
                      <div class="quiz-bottom">
                             <a href="#" class="btn btn-danger"> next</a>
                      </div>
+                     <div class="top-quiz">
+                        {{-- @if (Auth::user()->student->badge->count>=1)
+<button class="btn btn-primary " style="position: absolute; top:200px;right:40px" onclick="">
+remove option
+</button>
+@endif --}}
+<a href="#" class="btn btn-outline-warning me-4 {{$remove->count>0 ? '' : 'd-none' }}  removeoption" onclick="removeoption()"><div class="d-flex align-content-center">
+    <i class="ri-delete-back-2-line "></i> <span> remove option</span>
+</div>
+   </a>
+<a href="#" class="btn btn-warning me-4 {{$hints->count>0 ? '' : 'd-none' }}  hint" onclick="showHint()"><i class="ri-lightbulb-flash-line"></i> hint</a>
+<a href="#" class="btn btn-light me-4  d-none time" onclick="addtimetimetoquestion()">add time</a>
+                     </div>
 
                  </div>
                  @else
                 @if ($i<count($quiz->question))
                 <div class="quiz ">
+
                     <div class="top-quiz">
-                        <h1>{{$question->question_content}}</h1>
+                        <h1 class="me-3">{{$question->question_content}}</h1><span class="d-none show-hint me-3">{{$question->hint}}</span>
                     </div>
+
                        <input type="hidden" name="question_id[]" value="{{$question->id}}">
-                    <div class="middle-quiz">
+                    <div class="middle-quiz question">
                         @foreach ($question->option as $option)
                         <label class="options-element" style="position: relative" for="{{$option->id}}">
                            <div  id="">
@@ -174,16 +207,29 @@ font-size: 27px
                     <div class="quiz-bottom">
                            <a href="#" class="btn btn-danger"> next</a>
                     </div>
+                    <div class="top-quiz">
+                        {{-- @if (Auth::user()->student->badge->count>=1)
+<button class="btn btn-primary " style="position: absolute; top:200px;right:40px" onclick="">
+remove option
+</button>
+@endif --}}
+<a href="#" class="btn btn-outline-warning me-4 {{$remove->count>0 ? '' : 'd-none' }} removeoption" onclick="removeoption()"><div class="d-flex align-content-center">
+    <i class="ri-delete-back-2-line "></i> <span> remove option</span>
+</div>
+   </a>
+<a href="#" class="btn btn-warning me-4 {{$hints->count>0 ? '' : 'd-none' }}  hint" onclick="showHint()"><i class="ri-lightbulb-flash-line"></i> hint</a>
+<a href="#" class="btn btn-light me-4 d-none time" onclick="addtimetimetoquestion()">add time</a>
+                     </div>
 
 
               </div>
             @else
                 <div class="quiz ">
                     <div class="top-quiz">
-                        <h1>{{$question->question_content}}</h1>
+                        <h1>{{$question->question_content}}</h1><span class="d-none show-hint">{{$question->hint}}</span>
                     </div>
                        <input type="hidden" name="question_id[]" value="{{$question->id}}">
-                    <div class="middle-quiz">
+                    <div class="middle-quiz question">
                         @foreach ($question->option as $option)
                         <label class="options-element" style="position: relative" for="{{$option->id}}">
                            <div  id="">
@@ -201,6 +247,23 @@ font-size: 27px
                     <div class="quiz-bottom">
 
                     </div>
+                    <div class="top-quiz">
+                        {{-- @if (Auth::user()->student->badge->count>=1)
+<button class="btn btn-primary " style="position: absolute; top:200px;right:40px" onclick="">
+remove option
+</button>
+@endif --}}
+<a href="#"  class="btn btn-outline-warning me-4 d-none removeoption" onclick="removeoption()"><div class="d-flex align-content-center">
+    <i class="ri-delete-back-2-line "></i> <span> remove option</span>
+</div>
+   </a>
+<a href="#"  class="btn btn-warning me-4
+ {{-- {{$remove->count>0 ? '' : 'd-none' }} --}}'d-none'
+  hint" onclick="showHint()"><i class="ri-lightbulb-flash-line"></i>hint</a>
+{{-- <a  href="#" class="btn btn-light me-4
+{{$hints->count>0 ? '' : 'd-none' }}  'd-none'
+time" onclick="addtimetimetoquestion()"> <i class="ri-map-pin-time-line"></i>add time</a> --}}
+                     </div>
 
 
               </div>
@@ -214,11 +277,14 @@ font-size: 27px
 @endphp
 
         @endforeach
-        <input type="submit" value="answer"  style="padding: 10px;margin:10px">
+        <input class="btn btn-success" type="submit" value="answer"  style="padding: 10px;margin:10px">
         </div>
         </form>
 <script>
     // Set the date we're counting down to
+    const question=document.querySelectorAll(".question");
+let quostionpos=0;
+
 var countDownDate = new Date("{{$data2->dead_line}}").getTime();
 let url = "{{ route( 'public.quizs' )}}";
 // Update the count down every 1 second
@@ -274,19 +340,198 @@ var x = setInterval(function() {
 
 //////////////////////////////////////////////////////////////////////////////////
 
+
+
 const nextBtns = document.querySelectorAll(".btn-danger");
 const formSteps = document.querySelectorAll(".quiz");
+const delbutton = document.querySelectorAll(".removeoption");
+const hints = document.querySelectorAll(".hint");
+const timeadd = document.querySelectorAll(".time");
+const score= document.getElementById('score');
+score.innerHTML=quostionpos;
+const showhintvar= document.querySelectorAll(".show-hint");
+let badgeremove = document.getElementById('removeopt');
+let badgehint = document.getElementById('hintcount');
+let scoresize=document.getElementById('scoresize');
+ let pointcount=document.getElementById('pointcount');
+ let points=document.getElementById('points');
+
+
+var sizepo= {{Auth::user()->student->points->points}} ;
+function hintaddinfo() {
+    hints.forEach((hint) => {
+    hint.classList.contains("d-none") &&
+      hint.classList.remove("d-none");
+  });
+}function showremovebut() {
+    delbutton.forEach((hint) => {
+    hint.classList.contains("d-none") &&
+      hint.classList.remove("d-none");
+  });
+  badgeremove.value++;
+}
+function removehintaddinfo() {
+     badgehint.value--;
+     if (badgehint.value<=0) {
+  hints.forEach((hint) => {
+    hint.classList.add("d-none")
+  });
+     }
+
+
+}
+function badgebon() {
+    badgeanswer
+    if (badgeanswer==5) {
+        alert('you win POWER UPS remove option');
+        showremovebut()
+    }else{
+        if (badgeanswer==7) {
+            alert('you win POWER UPS of hint');
+            badgehint.value++;
+            hintaddinfo();
+        }
+    }
+}
+function showHint(){
+    showhintvar.forEach((hint) => {
+    hint.classList.contains("d-none") &&
+      hint.classList.remove("d-none");
+  });
+  removehintaddinfo();}
 
 let formStepsNum = 0;
+let checkcount=0;
+let checkcount1=0;
+let checkcount2=0;
 
 nextBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
+
     formStepsNum++;
+    checkAnswer(question[formStepsNum]);
+    score.innerHTML=quostionpos;
+    badgebon();
+    if (quostionpos==3) {
+        if (checkcount==0) {
+            alert('you have win bonus of 10 points after answering on 3 question correctly ');
+            checkcount=1;
+            scoresize.style.width='{{((Auth::user()->student->points->points + 10)/200)*100}}%';
+    count3=sizepo+10;
+    pointcount.innerHTML=count3+' points';
+    points.value=   sizepo+10         ;
+        }
+        // showremovebut();
+
+
+
+    }
+if (quostionpos==5) {
+    if (checkcount1==0) {
+        alert('you have win bonus of 10 points after answering on 5 question correctly');
+    // hintaddinfo();
+    checkcount1=1;
+
+    scoresize.style.width='{{((Auth::user()->student->points->points + 20)/200)*100}}%';
+    count3=sizepo+20;
+    points.value=   sizepo+20         ;
+
+    pointcount.innerHTML=count3+' points';
+
+    }
+
+
+
+}
+if (quostionpos==7) {
+    if (checkcount2==0) {
+        alert('you have win bonus of 15 points after answering on 7 question correctly');
+    // showremovebut();
+    checkcount2=1;
+
+    scoresize.style.width='{{((Auth::user()->student->points->points + 20 +15)/200)*100}}%';
+    count3=sizepo+20+15;
+    points.value=   sizepo+20+15         ;
+
+    pointcount.innerHTML=count3+' points';
+    }
+
+
+}
+if (quostionpos==9) {
+    alert('you have win bonus of 30 points after answering on 9 question correctly');
+    // showremovebut();
+    scoresize.style.width='{{((Auth::user()->student->points->points + 20+15 +30)/200)*100}}%';
+    count3=sizepo+20+30+15;
+    points.value=   sizepo+20+30+15         ;
+
+    pointcount.innerHTML=count3+' points';
+}
+
+showhintvar.forEach((hint) => {
+    hint.classList.add("d-none") ;
+  });
+
     updateFormSteps();
   });
 });
+let badgeanswer=0;
+function checkAnswer(options) {
+    cont=0;
+    for (let index = 0; index < options.children.length; index++) {
+        test=  options.children[index].children[0].children[0];
+        if (test.checked==1 && test.value==1) {
+            cont++;
+        }
+    }
+    if (getCountRight(options)==cont) {
+       quostionpos++;
+       badgeanswer++;
+
+    }else{
+        badgeanswer--;
+    }
+cont=0;
+
+}
+let conttt=0;
+
+function removeoption() {
+    conttt=0;
+    for (let index = 0; index < question[formStepsNum].children.length; index++) {
+        if (conttt==0) {
+            test=  question[formStepsNum+1].children[index].children[0].children[0];
+        if (test.value==0) {
+            conttt++;
+            question[formStepsNum+1].children[index].classList.add('d-none');
+            badgeremove.value--;
+if (    badgeremove.value<=0) {
+    delbutton.forEach((formStep) => {
+    formStep.classList.add("d-none") ;
+  });
+}
 
 
+        }
+        }
+
+
+    }
+
+}
+function getCountRight(options) {
+    total=0;
+    for (let index = 0; index < options.children.length; index++) {
+        test=  options.children[index].children[0].children[0].value;
+        if (test==1) {
+            total++;
+        }
+
+
+    }
+
+    return total;
+}
 
 function updateFormSteps() {
   formSteps.forEach((formStep) => {

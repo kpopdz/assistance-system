@@ -25,4 +25,8 @@ class course extends Model
     {
         return $this->belongsToMany(quiz::class,'course_quiz','course_id','quiz_id');
     }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('parent_id');
+    }
 }

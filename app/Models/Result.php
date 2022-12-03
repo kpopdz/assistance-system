@@ -19,4 +19,10 @@ class Result extends Model
     public function options() {
         return $this->hasMany(UserOption::class, 'result_id', 'id');
     }
+
+    public function pointrg()
+    {
+        $dob=($this->fullpoint)/($this->quiz->totalPoint());
+        return $dob;
+    }
 }

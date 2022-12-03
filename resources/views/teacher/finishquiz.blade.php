@@ -140,10 +140,14 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
             </div>
             <div style="position: relative">
                 <div style="position: absolute;z-index:1000;bottom:0;right:0;">
+                    @if ($quiz->assignments->count()==0)
                     <a  style="border: 1px solid #0000004e; border-radius: 10px;"  href="" class="text-black p-1 mx-1" data-bs-toggle="modal" data-bs-target="#verticalycentered">
-                        <img src="{{url('icons/delete_FILL0_wght400_GRAD0_opsz48.svg')}}" alt="" class="icons-size">
-                        <span class="button-info">Delete</span>
-                    </a>
+                     <img src="{{url('icons/delete_FILL0_wght400_GRAD0_opsz48.svg')}}" alt="" class="icons-size">
+                     <span class="button-info">Delete</span>
+                 </a>
+                    @else
+
+                    @endif
 
                     <a style="border: 1px solid #0000004e; border-radius: 10px;" href="" class="text-black p-1 mx-1" >
                         <i class="bi bi-heart"></i>

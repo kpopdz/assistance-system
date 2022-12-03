@@ -108,10 +108,8 @@ public function quizforclass(Request $request,$id)
     ->select('users.*')
     ->get();
 
-    $quiz->save();
 foreach ($class_id as $key => $value) {
     $assign=assignment::where(['quiz_id'=>$quiz->id,'class_id'=>$value])->first();
-
     if ($assign) {
         return redirect()->back()->with('error','you  assigne this quiz to selected classes before');
     }
@@ -126,7 +124,6 @@ foreach ($class_id as $key => $value) {
     'email'=>$user->email,
     'dead_line'=>$assignment->dead_line,
     'title'=>$quiz->title];
-    event(new newNotification($data));
     Notification::send($users, new NewUserNotification($user,$assignment,$quiz));
 // }foreach ($users as $user) {
 //     auth()->user()->notify(new NewUserNotification($user,$assignment,$quiz));
@@ -151,7 +148,7 @@ $k=0;
 
 
     $quizs=quiz::with(['resultavg','questionsumpoint'])
-    ->where('user_id',$user->id)->distinct('id')->groupby('id')
+    ->where('user_id',$user->id)
     ->join('assignment','quiz.id','=','assignment.quiz_id')
     ->select('quiz.*')
     ->get();
@@ -219,6 +216,7 @@ public function uploadcourse(Request $request)
            $request->video->move($path,$filename);
            $course->file_video= 'uploads/video/' . $filename;
        }
+       $course->class_id=$request->class_id;
 $course->save();
 foreach ($quiz_id as $key => $value) {
     $course_quiz=new course_quiz();
@@ -230,7 +228,10 @@ $course_quiz->save();
 public function viewcourse(course $course)
 {
 
-    return view('teacher.create course', compact('course'));}
+    // return view('teacher.create course', compact('course'));
+
+    return view('student.viewcourse', compact('course'));
+}
 
     public function viewcourses()
     {
@@ -244,6 +245,37 @@ public function viewcourse(course $course)
     {
         $course->delete();
         return redirect()->back();
+    }
+    public function sharedQuizfromteacher()
+    {
+        # code...
+        $user=Auth::user();
+    $id=Auth::id();
+    $quizs=[];
+        $share_quiz=share_quiz::where(['teacher_id'=>$user->teacher->id,'type_share'=>'teacher'])->get();
+        foreach ($share_quiz as $key => $value) {
+            # code...
+            $quizs[$key]=quiz::find($value->quiz_id);
+        }
+        $favorite=collection::where(
+            ['name'=>'favorite','user_id'=>$id]
+        )->first();
+        return view('teacher.sharedteacher',compact('quizs','favorite'));
+
+    }
+    function upcourse() {
+        $user=Auth::user();
+    $id=Auth::id();
+$classes=teacher::join('class_teacher','class_teacher.teacher_id','teachers.id')
+->join('classroom','class_teacher.class_id','classroom.id')
+->where('teachers.id',$user->teacher->id)
+->groupBy('class_teacher.class_id')
+->select('class_teacher.class_id','classroom.class_name')
+->get();
+        $quizs=quiz::where('user_id', Auth::user()->id)
+        ->where('publish',1)->get();
+        return view('teacher.uploadcourse',compact('quizs','classes'));
+
     }
 
     public function pageshare(quiz $quiz)
@@ -265,9 +297,10 @@ $share_quiz->quiz_id=$request->quiz_id;
 $share_quiz->teacher_id=$teacher->id;
 $share_quiz->type_share=$request->type_share;
 $share_quiz->save();
-return redirect()->back()->with('success','you have share quiz this teachers');
 
 }
+return redirect()->back()->with('success','you have share quiz this teachers');
+
 dd($request->type_share);
 
     }else {
@@ -376,9 +409,8 @@ public function results($id)
     ->join('class_user','class_user.user_id','=','results.user_id')
     ->join('classroom','classroom.id','=','class_user.class_id')
     ->select('results.*','classroom.class_name')
-    ->groupBy('class_name')
+    ->orderBy('class_name')
     ->get();
-   // return dd(count($results));
     return view('teacher.results',compact('results'));
 
 }
@@ -393,6 +425,7 @@ public function showresult($id)
 }
 public function importQuestion($id)
 {$quizs=quiz::where('visibility','Public')->get();
+
     $data=[];
     foreach ($quizs as $key => $value) {
         # code...
@@ -493,6 +526,7 @@ public function duplicateQuiz(quiz $quiz)
     $quizCopy=$quiz->replicate();
     $quizCopy->user_id=$id;
     $quizCopy->created_at=Carbon::now();
+    $quizCopy->publish=0;
     $quizCopy->save();
     foreach ($quiz->question as $question) {
 $questionCopy=$question->replicate();

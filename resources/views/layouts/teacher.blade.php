@@ -16,6 +16,7 @@
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
 
   <!-- Vendor CSS Files -->
   <link href="{{asset('assets/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
@@ -26,7 +27,7 @@
   <link href="{{asset('assets/vendor/remixicon/remixicon.css')}}" rel="stylesheet">
   <link href="{{asset('assets/vendor/simple-datatables/style.css')}}" rel="stylesheet">
   <link href="{{ asset('css/quiz.css') }}" rel="stylesheet">
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" ></script>
 
   <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
 
@@ -51,18 +52,18 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.html" class="logo d-flex align-items-center">
+        <span class="d-none d-lg-block me-1" style="padding-bottom: 21px;"> school </span>
+
         <img src="{{asset('assets/img/logoAss.png')}}" alt="">
-        <span class="d-none d-lg-block">sistance scholar</span>
+        <span class="d-none d-lg-block" style="padding-top: 21px;">sistance </span>
       </a>
+      @if (Auth::user())
       <i class="bi bi-list toggle-sidebar-btn"></i>
+
+      @endif
     </div><!-- End Logo -->
 @if (Auth::user())
-<div class="search-bar">
-    <form class="search-form d-flex align-items-center" method="POST" action="#">
-      <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-      <button type="submit" title="Search"><i class="bi bi-search"></i></button>
-    </form>
-  </div><!-- End Search Bar -->
+
 
   <nav class="header-nav ms-auto">
     <ul class="d-flex align-items-center">
@@ -272,13 +273,23 @@
 
           <li>
 
+@if (Auth::user()->role=='student')
+<a class="dropdown-item d-flex align-items-center" href="
+{{ route('student.profile') }}
+">
+  <i class="bi bi-person"></i>
+  <span>My Profile</span>
+</a>
+@endif
+@if (Auth::user()->role=='admin')
+<a class="dropdown-item d-flex align-items-center" href="
+{{ route('profile.admin') }}
+">
+  <i class="bi bi-person"></i>
+  <span>My Profile</span>
+</a>
+@endif
 
-            <a class="dropdown-item d-flex align-items-center" href="
-            {{Auth::user()->role=="student" ? route('student.profile') : 'users-profile.html' }}
-            ">
-              <i class="bi bi-person"></i>
-              <span>My Profile</span>
-            </a>
           </li>
           <li>
             <hr class="dropdown-divider">
@@ -332,6 +343,7 @@
         @endif
 @if (Auth::user())
 <aside id="sidebar" class="sidebar">
+
 @if (Auth::user()->role=="teacher")
 <ul class="sidebar-nav" id="sidebar-nav">
 
@@ -359,15 +371,19 @@
     </a>
   </li>
   <li class="nav-item">
+    <a class="nav-link {{Route::is('quizzes.shared.teachers') ? '' : 'collapsed' }}" href="{{ route('quizzes.shared.teachers')}}">
+        <i class="ri-share-fill"></i>      <span>shared from teachers</span>
+    </a>
+  </li>
+  <li class="nav-item">
     <a class="nav-link {{Route::is('teacher.myquizs') ? '' : 'collapsed' }}  " href="{{ route('teacher.myquizs')}}">
-      <i class="bi bi-grid"></i>
+        <i class="ri-send-plane-2-line"></i>
       <span>assigned quizs</span>
     </a>
   </li>
   <li class="nav-item">
     <a class="nav-link {{Route::is('stat.list') ? '' : 'collapsed' }}  " href="{{ route('stat.list')}}">
-      <i class="bi bi-grid"></i>
-      <span>View analysis reports & Statistics</span>
+        <i class="bi bi-clipboard-data"></i>      <span>View analysis reports & Statistics</span>
     </a>
   </li>
   <li class="nav-item">
@@ -376,18 +392,7 @@
       <span>view my courses</span>
     </a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link {{Route::is('home') ? '' : 'collapsed' }}  " href="{{ route('teacher.profile')}}">
-      <i class="bi bi-grid"></i>
-      <span>collections</span>
-    </a>
-  </li>
-<li class="nav-item">
-    <a class="nav-link {{Route::is('home') ? '' : 'collapsed' }}  " href="{{ route('teacher.profile')}}">
-      <i class="bi bi-grid"></i>
-      <span>PRofile</span>
-    </a>
-  </li>
+
 
 </ul>
 
@@ -409,14 +414,13 @@
 
   <li class="nav-item">
     <a class="nav-link {{Route::is('public.quizs.index') ? '' : 'collapsed' }}  " href="{{ route('public.quizs.index')}}">
-      <i class="bi bi-grid"></i>
+        <i class="bi bi-card-list"></i>
       <span>public quizs</span>
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link {{Route::is('quizs.index') ? '' : 'collapsed' }}" href="{{ route('quizs.index')}}">
-      <i class="bi bi-grid"></i>
-      <span>my students</span>
+    <a class="nav-link {{Route::is('public.courses') ? '' : 'collapsed' }}" href="{{ route('public.courses')}}">
+        <i class="bi bi-collection-fill"></i>      <span>view courses</span>
     </a>
   </li>
   <li class="nav-item">
@@ -430,16 +434,7 @@
 @if (Auth::user()->role=="parent")
 <ul class="sidebar-nav" id="sidebar-nav">
 
-    <li class="nav-item">
-        <a @if (Request::url()===url('/lay'))
-        class="nav-link"
-        @else
-        class="nav-link  collapsed"
-        @endif  href="{{ route('/lay')}}">
-          <i class="bi bi-plus-circle"></i>
-          <span>Progress</span>
-        </a>
-      </li>
+
 
   <li class="nav-item">
     <a class="nav-link {{Route::is('home') ? '' : 'collapsed' }}  " href="{{ route('parent.child')}}">
@@ -447,34 +442,46 @@
       <span>my shild</span>
     </a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link {{Route::is('quizs.index') ? '' : 'collapsed' }}" href="{{ route('quizs.index')}}">
-      <i class="bi bi-grid"></i>
-      <span>My Quizs</span>
-    </a>
-  </li>
+
 </ul>
 
 
 @endif
 @if (Auth::user()->role=="admin")
 <ul class="sidebar-nav" id="sidebar-nav">
-
-
-
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{Route::is('students.list') ? '' : 'collapsed' }}" href="{{ route('students.list')}}">
+          <i class="bi bi-grid"></i>
+          <span>Students</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{Route::is('teachers.list') ? '' : 'collapsed' }}" href="{{ route('teachers.list')}}">
+          <i class="bi bi-grid"></i>
+          <span>teachers</span>
+        </a>
+      </li>
   <li class="nav-item">
-    <a class="nav-link {{Route::is('add.person') ? '' : 'collapsed' }}  " href="{{ route('add.person')}}">
+    <a class="nav-link {{Route::is('parents.list') ? '' : 'collapsed' }}  " href="{{ route('parents.list')}}">
       <i class="bi bi-grid"></i>
-      <span>Add person</span>
+      <span>Parents</span>
     </a>
   </li>
+
   <li class="nav-item">
-    <a class="nav-link {{Route::is('quizs.index') ? '' : 'collapsed' }}" href="{{ route('quizs.index')}}">
+    <a class="nav-link {{Route::is('view.classroom.list') ? '' : 'collapsed' }}" href="{{ route('view.classroom.list')}}">
       <i class="bi bi-grid"></i>
-      <span>create classes</span>
+      <span>classes</span>
     </a>
   </li>
 </ul>
+
 
 
 @endif
@@ -718,6 +725,21 @@
 
 
   <main id="main" class="main">
+    @auth
+    @if (Auth::user()->role=="student" )
+    <div class="row d-flex mb-3 " style="background-image: linear-gradient( 135deg, #FDEB71 10%, #F8D800 100%);
+    padding-top: 10px; position:fixed;width:50%;z-index:1000;top:60px;right:25%;
+    border:1px solid #9d8802;
+    border-radius:3px">
+        <div class="col-4"><div class="progress">
+            <div class="progress-bar progress-bar-striped bg-info progress-bar-animated" id="scoresize" role="progressbar" style="width: {{((Auth::user()->student->points->points)/200)*100}}%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+              </div><div class="col-2"><h5 id="pointcount">{{Auth::user()->student->points->points}} points</h5></div></div>
+
+    @endif
+    @endauth
+
+<div class="mb-5"></div>
     @yield('content')
 
   </main>
@@ -758,7 +780,7 @@ channel.bind('my-event', function(data) {
   <script src="{{asset('assets/vendor/chart.js/chart.min.js')}}"></script>
   <script src="{{asset('assets/vendor/echarts/echarts.min.js')}}"></script>
   <script src="{{asset('assets/vendor/quill/quill.min.js')}}"></script>
-  <script src="{{asset('assets/vendor/simple-datatables/simple-datatables.js')}}"></script>
+  <script src="{{asset('/assets/vendor/simple-datatables/simple-datatables.js')}}"></script>
   <script src="{{asset('assets/vendor/tinymce/tinymce.min.js')}}"></script>
   <script src="{{asset('assets/vendor/php-email-form/validate.js')}}"></script>
 

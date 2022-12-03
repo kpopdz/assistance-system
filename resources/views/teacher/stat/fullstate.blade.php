@@ -2,13 +2,62 @@
 @section('content')
 <div class="col-lg-6">
     <div class="card">
-      <div class="card-body">
-        @foreach($quizs as $quiz)
-            {{$quiz->result()->avg('fullpoint')}}
-{{            $quiz->totalpoint()
-}}
+        <div class="card-body">
+          <h5 class="card-title">Table avrage of student points in quizzes</h5>
 
-        @endforeach
+          <!-- Default Table -->
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">title</th>
+                <th scope="col">Avg>75</th>
+                <th scope="col">Avg between 75-50</th>
+                <th scope="col">Avg <50 </th>
+                <th scope="col">%</th>
+              </tr>
+            </thead>
+            <tbody>
+                @foreach($quizs as $quiz)
+                {{-- {{$quiz->result()->avg('fullpoint')}}
+    {{            $quiz->totalpoint()
+    }} --}}
+
+    <tr>
+        <th scope="row">                {{$quiz->title}}
+        </th>
+        @if (($quiz->result()->avg('fullpoint')>(($quiz->totalPoint())*0.75)))
+        <td><i class="bi bi-check-circle-fill" style="color: green"></i></td>
+        <td></td>
+        <td></td>
+        <td>{{round((($quiz->result()->avg('fullpoint') )/($quiz->totalpoint()))*100)}}</td>
+        @else
+        @if (($quiz->result()->avg('fullpoint')<(($quiz->totalPoint())*0.75)) && ($quiz->result()->avg('fullpoint')>(($quiz->totalPoint())*0.5)))
+
+        <td></td>
+        <td><i class="bi bi-check-circle-fill" style="color: #dbdb31"></i></td>
+        <td></td>
+        <td>{{round((($quiz->result()->avg('fullpoint') )/($quiz->totalpoint()))*100)}}</td>
+        @else
+        <td></td>
+        <td></td>
+        <td><i class="bi bi-check-circle-fill" style="color: red"></i></td>
+        <td>{{(round((($quiz->result()->avg('fullpoint') )/($quiz->totalpoint()))*100))}}</td>
+        @endif
+
+        @endif
+
+      </tr>
+            @endforeach
+
+
+            </tbody>
+          </table>
+          <!-- End Default Table Example -->
+        </div>
+      </div>
+    <div class="card">
+      <div class="card-body">
+
         <h5 class="card-title">Quiz Chart</h5>
         {{-- @php
         $i=0;

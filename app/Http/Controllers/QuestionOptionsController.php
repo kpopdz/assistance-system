@@ -32,13 +32,25 @@ class QuestionOptionsController extends Controller
         $newOptionArray = $request->input('newoptions');
         $newCorrectOptions = $request->input('newcorrect');
         $id = $request->input('option_id');
-        // return dd($id);
+if ($id!==null) {
+    # code...
+    $optionDeleteds=option::where('question_id',$question->id)
+    ->whereNotIn('id', $id)
+   ->get()->each(function($optionDeleted) {
+       $optionDeleted->delete();
+   }
 
-        $optionDeleteds=option::where('question_id',$question->id)
-         ->whereNotIn('id', $id)
-        ->get()->each(function($optionDeleted) {
-            $optionDeleted->delete();
-        });
+);
+}else {
+    $optionDeleteds=option::where('question_id',$question->id)
+
+   ->get()->each(function($optionDeleted) {
+       $optionDeleted->delete();
+   }
+
+);
+}
+
         // return dd($optionDeleted);
 
         $question->question_content = $questionText;
@@ -49,8 +61,12 @@ class QuestionOptionsController extends Controller
         //
         $i=0;
         $temp=0;
+        if ($id!==null) {
         foreach ($optionArray as $index => $opt) {
             $data1[]=$index;
+
+                # code...
+
             $option = option::find($id[$i]);
 
             $option->option_CONTENT = $opt;
@@ -75,6 +91,7 @@ class QuestionOptionsController extends Controller
             $i=$i+1;
             $temp=0;
         }
+    }
         if ($newOptionArray) {
             foreach ($newOptionArray as $index1 => $opt) {
                 $option2 = new option();

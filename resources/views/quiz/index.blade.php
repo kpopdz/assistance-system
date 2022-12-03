@@ -45,6 +45,9 @@ border-radius: 20px;
 {{$message}}</div>
  </div>
  @endif
+ @php
+     $k=1000;
+ @endphp
 <div class="row justify-content-center">
     <div class="search-flex col-xl-9 d-flex justify-content-between">
         <div class="d-flex">
@@ -144,8 +147,8 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Delete the Quiz "{{$item->title}}"</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <h5 class="modal-title">hello</h5>
+
             </div>
             <div class="modal-body">
                 do you want delete The quiz with title "{{$item->title}}"          </div>
@@ -205,10 +208,14 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
             </div>
             <div style="position: relative">
                 <div style="position: absolute;z-index:5;bottom:0;right:0;">
-                    <a  style="border: 1px solid #0000004e; border-radius: 10px;"  href="" class="text-black p-1 mx-1" data-bs-toggle="modal" data-bs-target="#verticalycentered">
-                        <img src="{{url('icons/delete_FILL0_wght400_GRAD0_opsz48.svg')}}" alt="" class="icons-size">
-                        <span class="button-info">Delete</span>
-                    </a>
+                   @if ($item->assignments->count()==0)
+                   <a  style="border: 1px solid #0000004e; border-radius: 10px;"  href="" class="text-black p-1 mx-1" data-bs-toggle="modal" data-bs-target="#verticalycentered">
+                    <img src="{{url('icons/delete_FILL0_wght400_GRAD0_opsz48.svg')}}" alt="" class="icons-size">
+                    <span class="button-info">Delete</span>
+                </a>
+                   @else
+
+                   @endif
 
 
                     <a style="border: 1px solid #0000004e; border-radius: 10px;" href="{{route('addtofav',$item)}}" class="text-black p-1 mx-1" >
@@ -219,12 +226,12 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
 
                     </a>
                 </form>
-                    <a style="border: 1px solid #0000004e; border-radius: 10px;" href="" class="text-black p-1 mx-1" >
+                    {{-- <a style="border: 1px solid #0000004e; border-radius: 10px;" href="" class="text-black p-1 mx-1" >
                         <i class="bi bi-save2"></i>
                                                 <span class="button-info">Like</span>
 
 
-                    </a>
+                    </a> --}}
                     </Div>
 
                     </div>
@@ -252,7 +259,7 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
                             </div>
                           </div>
                         </div><!-- End Disabled Backdrop Modal--> --}}
-                        <div class="modal fade" id="disablebackdrop" tabindex="-1" data-bs-backdrop="false">
+                        <div class="modal fade" id="disablebackdrop{{$k}}" tabindex="-1" data-bs-backdrop="false">
                             <div class="modal-dialog">
                               <div class="modal-content">
                                 <div class="modal-header">
@@ -266,13 +273,14 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
                                         <div class="row mb-3">
                                             <label class="col-sm-3 col-form-label">class</label>
                                             <div class="col-sm-9">
+
                                               <select class="form-select"name="class_id[]" multiple="true" aria-label="multiple select example">
 
 
 
-                                        @foreach (Auth::user()->classes as $class)
+                                        @foreach ($classes as $class)
 
-                                        <option value="{{$class->id }}">{{$class->class_name }}</option>
+                                        <option value="{{$class->class_id }}"> {{$class->class_id }}{{$class->class_name }}</option>
 
                                     {{-- {{$class->users->count() }} --}}
                                     @endforeach
@@ -303,8 +311,7 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
                              assign to
                             </button>
                             <ul class="dropdown-menu " aria-labelledby="dropdownMenuButton1">
-                              <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#disablebackdrop">class</button>
-
+                              <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#disablebackdrop{{$k}}">class</button>
                             </li>
                               <li><a class="dropdown-item" href="#">sub-group</a></li>
                             </ul>
@@ -340,11 +347,13 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
       </div>
 
   </div>
+  @php
+      $k++;
+  @endphp
   @endforeach
 
 
   <h5>Pagination:</h5>
-  {{ $quizs->links() }}
 </div>
 
 {{-- <div class="container" style="padding-top: 2%"> --}}

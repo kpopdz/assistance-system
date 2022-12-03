@@ -157,6 +157,9 @@ document.getElementById('quiz_image_color').style.backgroundColor = random_color
       </div>
 
   </div>
+  @php
+    $i++;
+@endphp
   @endforeach
 {{--
 <div class="col-lg-6"></div>

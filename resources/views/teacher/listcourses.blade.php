@@ -9,7 +9,32 @@
           <p>here list of your courses you created</p>
           <p>to upload another class click <a href="{{route('page.upload')}}">here</a></p>
           <!-- Table with stripped rows -->
-          <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns"><div class="dataTable-top"><div class="dataTable-dropdown"><label><select class="dataTable-selector"><option value="5">5</option><option value="10" selected="">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option></select> entries per page</label></div><div class="dataTable-search"><input class="dataTable-input" placeholder="Search..." type="text"></div></div><div class="dataTable-container"><table class="table datatable dataTable-table">
+          <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
+            <div class="dataTable-top">
+                <div class="dataTable-dropdown">
+                    <label><select class="dataTable-selector"><option value="5">5</option><option value="10" selected="">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option></select> entries per page</label></div><div class="dataTable-search"><input class="dataTable-input" placeholder="Search..." type="text"></div></div><div class="dataTable-container">
+
+                        <table class="table" id="datatable">
+                            <thead>
+                                <tr>
+                                    <th>First name</th>
+                                    <th>Last name</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach ($courses as $course)
+                                <tr>
+                                    <td>{{ $course->name }}</td>
+                                    <td>{{ $course->created_at }}</td>
+                                    <td></td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+
+
+                        <table class="table datatable dataTable-table" >
             <thead>
               <tr><th scope="col" data-sortable="" style="width: 5.53967%;">
                 <a href="#" class="dataTable-sorter">#</a>
@@ -64,4 +89,9 @@
 
     </div>
   </div>
-@endsection
+  <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+  <script>
+      $(document).ready( function () {
+          $('#datatable').DataTable();
+      });
+  </script>@endsection

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use \Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class parents extends Model
 {
@@ -17,8 +18,15 @@ class parents extends Model
 {
     return $this->belongsTo(User::class);
 }
+/**
+ * Get all of the comments for the parents
+ *
+ * @return \Illuminate\Database\Eloquent\Relations\HasMany
+ */
+
 public function students()
 {
-    return $this->belongsToMany(Student::class,'parent_student','parent_id','student_id');
+    return $this->belongsToMany(Student::class,'parent_student','parent_id','student_id')->withPivot('relationship');
 }
+
 }

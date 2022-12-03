@@ -52,6 +52,10 @@ public function teacher(): HasOne
 {
     return $this->hasOne(teacher::class, 'user_id', 'id');
 }
+public function admin(): HasOne
+{
+    return $this->hasOne(admin::class, 'user_id', 'id');
+}
 public function student(): HasOne
 {
     return $this->hasOne(Student::class, 'user_id', 'id');

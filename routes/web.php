@@ -45,6 +45,13 @@ Route::get('/listen', function () {
 
 Route::post('login/check', [LoginController::class , 'authenticate'])->name("login.new");
 
+Route::get('student/courses', [StudentController::class , 'allcourses'])->name("public.courses");
+Route::get('student/badges', [StudentController::class , 'badgestudents'])->name("public.badges");
+
+
+Route::get('student/{course}/view', [StudentController::class , 'viewCourseToStud'])->name("public.courses.view");
+
+
 Route::get('student/index', [StudentController::class , 'index'])->name("public.quizs");
 Route::get('student/profile', [StudentController::class , 'userprofile'])->name("student.profile");
 Route::post('student/profile/update', [StudentController::class , 'UpdateProfile'])->name("student.profile.update");
@@ -53,6 +60,9 @@ Route::post('student/profile/update', [StudentController::class , 'UpdateProfile
 Route::get('student/publicquizzes', [StudentController::class , 'publicQuizzes'])->name("public.quizs.index");
 
 Route::get('student/quiz/{quiz}/{data2}', [StudentController::class , 'passquiz'])->name('student.pass');
+Route::get('student/course/{quiz}/', [StudentController::class , 'coursequiz'])->name('student.pass.course');
+
+
 Route::get('student/result/{id}', [StudentController::class , 'show'])->name('results.show');
 Route::post('student/quiz/answer', [StudentController::class , 'store'])->name('student.answer.test');
 Route::get('student/addtofavorate/{quiz}', [StudentController::class , 'addToFav2'])->name('student.addtofav');
@@ -76,16 +86,76 @@ Route::post('/teacher/post',[TeacherController::class ,'profile'])->name('post.p
 Route::post('/teacher/createclass',[TeacherController::class ,'CreateClass'])->name('create.class');
 Route::post('/course/upload',[TeacherController::class ,'uploadcourse'])->name('course.uploade');
 Route::delete('/course/{course}/delete',[TeacherController::class ,'deletecourse'])->name('course.delete');
+Route::get('/quizzes/teachers/shared',[TeacherController::class ,'sharedQuizfromteacher'])->name('quizzes.shared.teachers');
 
-Route::get('/students', [AdminController::class,'studentlist'])->name('students.list');
 
-Route::get('course/upload/page', function () {
 
-    $quizs=quiz::where('user_id', Auth::user()->id)
-    ->where('publish',1)->get();
-    return view('teacher.uploadcourse',compact('quizs'));
+// Route::get('users/datatable', [AdminController::class, 'datatable'])->name('users.datatable');
 
-})->name('page.upload');
+
+Route::get('/admin/profile', [AdminController::class , 'profileadmin'])->name("profile.admin");
+Route::post('/admin/profile/update', [AdminController::class , 'UpdateAdmin'])->name("profile.admin.update");
+
+
+Route::get('/changeStatus', [AdminController::class , 'changeStatus'])->name("change.status");
+Route::get('/classrooms/view/list', [AdminController::class , 'viewclasses'])->name("view.classroom.list");
+Route::get('/classrooms/create', [AdminController::class , 'viewCreateClass'])->name("classroom.create");
+Route::get('/{student}/radar', [AdminController::class , 'radar'])->name("radar.student");
+Route::post('/classrooms/save', [AdminController::class , 'addclass'])->name("classroom.save");
+Route::get('/classrooms/{classroom}/delete', [AdminController::class,'deleteclassroom'])->name('delete.classroom');
+
+
+Route::post('/teacher/teacher/update', [AdminController::class , 'UpdateTeacher'])->name("admin.teacher.profile.update");
+
+Route::get('/students/add/student', [AdminController::class,'pageAddStudent'])->name('students.view.add');
+Route::get('/teachers/add/teacher', [AdminController::class,'pageAddTeacher'])->name('teachers.view.add');
+
+
+Route::post('/students/addnewstudent', [AdminController::class,'AddStudentnew'])->name('students.add.save');
+Route::post('/teachers/addnewTeacher', [AdminController::class,'AddTeachernew'])->name('teacher.add.save');
+
+Route::get('/teachers/{teacher}/view', [AdminController::class,'teacherview'])->name('teachers.view');
+Route::get('/parents/{parent}/view', [AdminController::class,'parentview'])->name('parents.view');
+Route::get('/parents/{parent}/diasctive', [AdminController::class,'aprove'])->name('parents.aprove');
+
+Route::get('/parents/{parent}/disactive', [AdminController::class,'disactive'])->name('parents.disactive');
+Route::get('/classrooms/{classroom}/view', [AdminController::class,'viewinfoclass'])->name('classroom.view');
+Route::get('/classrooms/{classroom}/delete/{student}', [AdminController::class,'deletestudentfromclasss'])->name('delete.from.classroom');
+Route::get('/classrooms/{classroom}/delete/teacher/{teacher}/{data1}', [AdminController::class,'deleteteacherfromclasss'])->name('delete.teacher.from.classroom');
+Route::get('/teachers/teacher/indcate/{classroom}/{data1}', [AdminController::class,'indacteclass'])->name('indcate.teachers');
+Route::get('/students/student/add/{classroom}/', [AdminController::class,'addstudtoclass'])->name('add.student.to.class');
+
+Route::get('/teachers/teacher/search', [AdminController::class,'showEmployee'])->name('indcate.teachers.search');
+Route::post('/teachers/teacher/indcate/save', [AdminController::class,'savemoduleteacher'])->name('indcate.teachers.save');
+Route::get('/students/points', [AdminController::class,'pointsstudents'])->name('students.points');
+Route::post('/students/student/indcate/save', [AdminController::class,'savestudenttoclass'])->name('indcate.student.save');
+
+Route::get('courses/math', function ( ){
+    return view('student.coursesteachers');
+});
+
+
+Route::get('/students', [AdminController::class,'studentlist'])->name('students.list')->middleware('isadmin');;
+Route::get('/teachers/list', [AdminController::class,'teacherlist'])->name('teachers.list');
+Route::get('/parents/list', [AdminController::class,'parentlist'])->name('parents.list');
+
+Route::get('/teachers/{teacher}/delete', [AdminController::class,'deleteoneTeacher'])->name('delete.teacher.one');
+Route::get('/teachers/{teacher}/edit', [AdminController::class,'teacheredit'])->name('teachers.edit.profile');
+
+Route::get('/students/query/', [AdminController::class,'listquery'])->name('students.list.search');
+Route::get('/teachers/query/', [AdminController::class,'teacherlistsearch'])->name('teachers.list.search');
+
+
+Route::get('/students/{student}', [AdminController::class,'studentview'])->name('students.view');
+Route::get('/students/{student}/edit', [AdminController::class,'studentedit'])->name('students.edit.profile');
+
+Route::get('/students/{student}/delete', [AdminController::class,'deleteStudent'])->name('delete.student');
+Route::post('/students/student/update', [AdminController::class , 'UpdateStudent'])->name("admin.student.profile.update");
+Route::get('/students/{student}/state', [AdminController::class , 'statStudent'])->name("student.state.update");
+Route::get('/students/{student}/state/module', [AdminController::class , 'statStudent'])->name("student.state.show");
+
+
+Route::get('course/upload/page', [TeacherController::class ,'upcourse'])->name('page.upload');
 Route::get('teacher/share-quiz/{quiz}',[TeacherController::class ,'pageshare'])->name('teacher.share');
 Route::post('teacher/share-quiz/post',[TeacherController::class ,'sharequiz'])->name('teacher.share.quiz');
 
@@ -211,6 +281,6 @@ Route::get('/stat/list',[TeacherController::class ,'list'])->name('stat.list');
 Route::get('/notify',[App\Http\Controllers\HomeController::class ,'notify'])->name('teacher.classes.notify');
 Route::get('/markasread/{id}', [StudentController::class , 'markasread'])->name("markasread");
 
-
+Route::post('comments', [StudentController::class, 'storecomment'])->name('comments.store');
 
 

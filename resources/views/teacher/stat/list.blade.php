@@ -37,6 +37,8 @@
             text-align: center
         }</style>
 @section('content')
+
+<a href="{{route('class.level')}}" class="btn btn-success mb-3" style="">class level</a>
 <div class="col-xl-8">
 
 

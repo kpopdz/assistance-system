@@ -88,11 +88,17 @@ border-top: 0;
 border-bottom-left-radius: 29px;
 border-bottom-right-radius: 29px;"
     >
-<a href="{{route('quizs.finishe',$quiz->id)}}" class="btn btn-outline-dark" >finished</a>
+    @if ($quiz->publish==1)
+
+    <a class="btn btn-outline-dark" href="{{ route('teacher.quiz.duplicate',$quiz->id)}}" style="">duplicate Quiz</a>
+    @else
+    <a href="{{route('quizs.finishe',$quiz->id)}}" class="btn btn-outline-dark" >finished</a>
     <a class="btn btn-outline-dark" href="{{route('question.list',$quiz->id)}}"> import</a>
-    <a class="btn btn-outline-dark" href="{{ route('quiz.duplicate',$quiz->id)}}" style="">duplicate Quiz</a>
+    <a class="btn btn-outline-dark" href="{{ route('teacher.quiz.duplicate',$quiz->id)}}" style="">duplicate Quiz</a>
 
     <a class="btn btn-outline-dark" href="{{ route('quizs.create.posts',$quiz->id)}}" style="">Add Question</a>
+    @endif
+
 
 </div>
 
@@ -126,10 +132,15 @@ border-bottom-right-radius: 29px;"
     <div class="d-flex justify-content-between px-2 py-2 mb-2 bg-header-question align-items-center">
         <div > question {{$i}}</div>
         <div class="d-flex ">
-    <a class="d-flex bg-header-question-icon" href="{{ route('question.edit',[$quiz->id,$item->id])}}">        <i class="bi bi-pencil-square"></i>        <div class="ms-2"> Edit</div>
-    </a>
-    <a class="d-flex bg-header-question-icon" data-bs-toggle="modal" data-bs-target="#deletequestion{{$i}}">        <img src="http://127.0.0.1:8000/icons/delete_FILL0_wght400_GRAD0_opsz48.svg" alt="" class="icons-size">
-    </a>
+            @if ($quiz->publish==1)
+
+            @else
+            <a class="d-flex bg-header-question-icon" href="{{ route('question.edit',[$quiz->id,$item->id])}}">        <i class="bi bi-pencil-square"></i>        <div class="ms-2"> Edit</div>
+            </a>
+            <a class="d-flex bg-header-question-icon" data-bs-toggle="modal" data-bs-target="#deletequestion{{$i}}">        <img src="http://127.0.0.1:8000/icons/delete_FILL0_wght400_GRAD0_opsz48.svg" alt="" class="icons-size">
+            </a>
+            @endif
+
     {{-- delet question --}}
 
     {{-- ///////// --}}
@@ -181,11 +192,23 @@ border-bottom-right-radius: 29px;"
             {!! $quiz->description !!}
         </div>
         <div class="mb-2" style="color: #475af1;"><i class="bi bi-eye-fill"></i>  {{$quiz->visibility}}</div>
+        <div class=" mb-3">
+            @foreach($quiz->tags as $tag)
+
+            <span class="badge rounded-pill bg-secondary">{{$tag->name}}</span>
+
+    @endforeach
+          </div>
 
             <!-- Vertically centered Modal -->
+            @if ($quiz->publish==1)
+
+            @else
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#verticalycentered">
                 Edit
            </button>
+            @endif
+
             <div class="modal fade" id="verticalycentered" tabindex="-1">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -210,6 +233,8 @@ border-bottom-right-radius: 29px;"
                         </div>
                         <span class="text-image mb-3"></span>
                         @endif
+                        <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image" onclick="defaultBtnActive()"><i class="bi bi-upload"></i></a>
+
 
                     </div>
 
@@ -258,7 +283,22 @@ border-bottom-right-radius: 29px;"
                       </div>
 
 
+                      <div class="d-flex col justify-content-between">
+                        <label for="floatingSelect">the module :</label>
 
+                      <div class="form-floating mb-3 col-9 " >
+
+                        <select class="form-select  " name="module" id="floatingSelect" aria-label="Floating label select example">
+                          <option >choose module</option>
+
+                          <option value="math" {{ old('module', $quiz->module) == 'math' ? 'selected' : ''}}>math</option>
+                          <option value="arabic" {{ old('module', $quiz->module) == 'arabic' ? 'selected' : ''}}>arabic</option>
+                          <option value="french" {{ old('module', $quiz->module) == 'french' ? 'french' : ''}}>french</option>
+
+                        </select>
+                        <label for="floatingSelect">module</label>
+                      </div>
+                    </div>
 
 
 
@@ -282,6 +322,7 @@ border-bottom-right-radius: 29px;"
                         <label for="floatingSelect">visiblity</label>
                       </div>
                     </div>
+
                     </div>
                     </div>
                   <div class="modal-footer">

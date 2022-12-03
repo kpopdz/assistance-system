@@ -12,6 +12,10 @@ use App\Models\collection_quiz;
 use App\Models\collection;
 use Carbon\Carbon;
 use App\Traits\crudsTraits;
+use App\Models\classroom;
+use App\Models\teacher;
+
+
 
 use DB;
 
@@ -58,6 +62,14 @@ and yoc search with filter about
     public function index (Request $request)
     {$user=Auth::user();
         $id=Auth::id();
+
+$classes=classroom::join('class_teacher','class_teacher.class_id','classroom.id')
+
+->join('teachers','class_teacher.teacher_id','teachers.id')
+->where('teachers.id',$user->teacher->id)
+->groupBy('class_teacher.class_id')
+->select('class_teacher.class_id','classroom.class_name')
+->get();
         // return dd(Auth::user()->collections);
         $favorite=collection::where(
             ['name'=>'favorite','user_id'=>$id]
@@ -117,7 +129,7 @@ and yoc search with filter about
         ->where('title','LIKE','%'.$query.'%')
         //->orWhere('visibilty',)
         ->paginate(5);
-        return view ('quiz.index',compact('quizs'));
+        return view ('quiz.index',compact('quizs','classes'));
 
 
             }
@@ -173,14 +185,14 @@ and yoc search with filter about
                         ->where('user_id', Auth::user()->id)
                         ->select('quiz.*','users.name','users.email')
 
-                        ->paginate(5);
+                        ->get();
                     }
 
      //   $quizs=quiz::orderBy('title')
        // ->paginate(30);
 
        }
-       return view('quiz.index',['quizs'=>$quizs,'favorite'=>$favorite]);
+       return view('quiz.index',['quizs'=>$quizs,'favorite'=>$favorite,'classes'=>$classes]);
 
 
     }
@@ -264,19 +276,24 @@ return redirect()->route('quizs.show',compact('quiz'))->with('success','question
     }
 
     public function saveOtherInfo(Request $request , $id)
-    {     $request->validate([
+    {
+   $request->validate([
         'title'=>'required',
-        'description'=>'required',
+        // 'description'=>'required',
         // 'visibility'=>'required',
         // 'image' => 'required',
-         'tags' => 'required',
+        //  'tags' => 'required',
         // 'publish'=>'required',
       ]);
 
 $quiz=quiz::where('id',$id)->first();
 
 $quiz -> title = request('title');
-$quiz -> description= request('description');
+if (request('description')) {
+    # code...
+    $quiz -> description= request('description');
+
+}
 $tags = explode(",", $request->tags);
 DB::table('tagging_tagged')->where('taggable_id',$quiz->id)->delete();
 
@@ -294,13 +311,24 @@ if ( $request->image) {
 
        $quiz->image= $path;
     }
-
         // $tags = explode(",", $request->tags);
-        $quiz->visibility = $request->visibility;
-        $quiz -> update();
+        if ($request->visibility) {
+            # code...
+            $quiz->visibility = $request->visibility;
+        }
+if ($request->module) {
+    # code...
+    $quiz->module = $request->module;
 
-        $quiz->tag($tags);
+}
+
+        $quiz -> update();
+if ($request->tags) {
+    # code...
+    $quiz->tag($tags);
 $quiz -> update();
+}
+
         return redirect()->route('quizs.show' ,compact('quiz'))->with('success','quiz updated successfully to add question in your quiz  click       <a href="'. route('quizs.create.posts',$quiz->id) . '">
         here</a> ');
 
@@ -314,15 +342,14 @@ $quiz -> update();
 
      $request->validate([
         'title'=>'required',
-        'description'=>'required',
+        // 'description'=>'required',
         // 'visibility'=>'required',
         // 'image' => 'required',
-         'tags' => 'required',
+        //  'tags' => 'required',
         // 'publish'=>'required',
       ]);
 
 
-      $tags = explode(",", $request->tags);
 
 
       //  $quiz=quiz::create([$request->all()]);
@@ -330,7 +357,11 @@ $quiz -> update();
            $quiz = new quiz();
           $quiz -> user_id=$id;
         $quiz -> title = request('title');
-        $quiz -> description= request('description');
+        if (request('description')) {
+            # code...
+            $quiz -> description= request('description');
+
+        }
 
 
 //         if ($request->has('save'))
@@ -346,8 +377,14 @@ $quiz -> update();
 
 
         $quiz -> save();
-        $quiz->tag($tags);
-        $quiz -> save();
+        if ($request->tags) {
+            # code...
+            $tags = explode(",", $request->tags);
+
+            $quiz->tag($tags);
+            $quiz -> save();
+        }
+
 
 
          return redirect()->route('quizs.show' ,compact('quiz'))->with('success','quiz added successfully');
@@ -481,6 +518,8 @@ and table question
         $question = new Question();
         $question->question_content = $questionText;
         $question->question_point=$request->point;
+        $question->hint=$request->hint;
+
 
                 $question->save();
                 $id=$question->id;

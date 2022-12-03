@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.teacher')
 <style>
 
 .p-4 {
@@ -176,10 +176,7 @@
 }
 </style>
 @section('content')
-@foreach ($students as  $student)
-<h1> Firstname {{$student->firstname}}</h1>
-<h1> Lastname{{$student->lastname}}</h1>
-<h1> birthdate{{$student->birth_date}}</h1>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
 <div class="container mt-3 mb-4">
 <div class="col-lg-9 mt-4 mt-lg-0">
@@ -188,6 +185,7 @@
         <div class="user-dashboard-info-box table-responsive mb-0 bg-white p-4 shadow-sm">
           <table class="table manage-candidates-top mb-0">
             <thead>
+
               <tr>
                 <th>Fullname</th>
                 <th class="text-center">Status</th>
@@ -195,11 +193,19 @@
               </tr>
             </thead>
             <tbody>
+                @foreach ($students as  $student)
+
               <tr class="candidates-list">
                   <!-- -->
                 <td class="title">
                   <div class="thumb">
+                    @if ($student->user->avatar)
+                    <img class="img-fluid" src="{{ url($student->user->avatar) }}" alt="">
+
+                    @else
                     <img class="img-fluid" src="{{ url('uploads/quiz/student.png') }}" alt="">
+
+                    @endif
                   </div>
                   <div class="candidate-list-details">
                     <div class="candidate-list-info">
@@ -223,26 +229,16 @@
                 </td>
               </tr>
                                 <!-- -->
+                                @endforeach
 
 
             </tbody>
           </table>
-          <div class="text-center mt-3 mt-sm-3">
-            <ul class="pagination justify-content-center mb-0">
-              <li class="page-item disabled"> <span class="page-link">Prev</span> </li>
-              <li class="page-item active" aria-current="page"><span class="page-link">1 </span> <span class="sr-only">(current)</span></li>
-              <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
-              <li class="page-item"><a class="page-link" href="#">...</a></li>
-              <li class="page-item"><a class="page-link" href="#">25</a></li>
-              <li class="page-item"> <a class="page-link" href="#">Next</a> </li>
-            </ul>
-          </div>
+
         </div>
       </div>
     </div>
   </div>
 </div>
 
-@endforeach
 @endsection

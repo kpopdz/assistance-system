@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 use \Illuminate\Database\Eloquent\Relations\BelongsTo;
+use \Illuminate\Database\Eloquent\Relations\HasMany;
 
 class quiz extends Model
 {
@@ -29,6 +30,16 @@ class quiz extends Model
     //     return $this->hasMany(question::class);
 
     // }
+    /**
+     * Get all of the assignment for the quiz
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(assignment::class, 'quiz_id', 'id');
+    }
+
     public function didYouPassQuiz($id)
     {
         $coll =$this->result()->find($id);
@@ -52,6 +63,7 @@ class quiz extends Model
         ->groupBy('quiz_id');
 
     }
+
     public function getAvgRatingAttribute()
 {
     if ( ! array_key_exists('resultavg', $this->relations)) {
@@ -66,6 +78,7 @@ class quiz extends Model
 {
     return $this->belongsToMany(question::class,'quiz_question','quiz_id','question_id');
 }
+
 public function questionsumpoint()
 {
   return $this->question()

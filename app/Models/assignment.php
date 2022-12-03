@@ -9,7 +9,6 @@ class assignment extends Model
 {
     use HasFactory;
     protected $table="assignment";
-    public $timestamps = false;
 
 
 }

@@ -12,12 +12,22 @@ use App\Models\quiz;
 use App\Models\question;
 use App\Models\option;
 use App\Models\option_student;
+use App\Models\class_user;
+
 use App\Models\quiz_question;
 use App\Models\assignment;
 use App\Models\collection;
 use App\Models\collection_quiz;
 use App\Models\academic_level;
 use Monarobase\CountryList\CountryListFacade;
+use App\Models\point;
+use App\Models\badge;
+use App\Models\Comment;
+
+
+
+use App\Models\course;
+
 
 use App\Traits\crudsTraits;
 
@@ -59,7 +69,6 @@ class StudentController extends Controller
                foreach ($quizs as $key => $value) {
                 $data2[$key]=assignment::find($value->deadline_id);
             }
-            // return dd($data2);
        return view ('student.quizs',compact('quizs','data2'));
      //return view ('home',['user'=>Auth::user()]);
 
@@ -88,19 +97,52 @@ public function passquiz(quiz $quiz,assignment $data2)
     $id=Auth::id();
     $result=Result::where('user_id',$id)
     ->where('quiz_id',$id2)->get();
-    //  return dd((Carbon::now())< ($quiz->dead_line));
+    $remove=badge::where(['student_id'=>$user->student->id,'name'=>'removeoption'])->first();
+    $hints=badge::where(['student_id'=>$user->student->id,'name'=>'hint'])->first();
     if ((Carbon::now())<($data2->dead_line)) {
         if (count($result)) {
             return redirect()->back()->with('error','you are passed the quiz');
                             }
 
-         return view ('student.passquiz',compact('quiz','data2'));
+         return view ('student.passquiz',compact('quiz','data2','remove','hints'));
 }else {
     return redirect()->back()->with('error','this quiz is close');
 }
 
 
 
+}
+public function coursequiz(quiz $quiz)
+
+{
+    $id2=$quiz->id;
+    //$questions=question::where('quiz_id',$id)->get();
+    $user=Auth::user();
+    $id=Auth::id();
+
+    $remove=badge::where(['student_id'=>$user->student->id,'name'=>'removeoption'])->first();
+    $hints=badge::where(['student_id'=>$user->student->id,'name'=>'hint'])->first();
+    //  return dd((Carbon::now())< ($quiz->dead_line));
+
+
+         return view ('student.passquizcourse',compact('quiz','remove','hints'));
+
+
+
+
+}
+public function viewCourseToStud(course $course)
+{
+    return view('student.viewcourse',compact('course'));
+    # code...
+}
+public function allcourses()
+{
+    $user=Auth::user();
+    $id=Auth::id();
+    $class_user=class_user::where('user_id',$id)->first();
+    $courses=course::where('class_id',$class_user->class_id)->get();
+return view('student.coursesteachers',compact('courses'));    # code...
 }
 public function UpdateProfile(Request $request)
 {
@@ -142,6 +184,24 @@ public function UpdateProfile(Request $request)
    $student->save();
  return redirect()->route('student.profile');
 
+}
+
+
+public function storecomment(Request $request)
+{
+    $input = $request->all();
+    $request->validate([
+        'body'=>'required',
+    ]);
+    $comment=new comment();
+    $comment->user_id=auth()->user()->id;
+    // $input['user_id'] = auth()->user()->id;
+    $comment->course_id=$request->course_id;
+    $comment->body=$request->body;
+    $comment->save();
+
+    // Comment::create($input);
+    return back();
 }
 public function userprofile()
 {
@@ -196,6 +256,12 @@ return dd($sum);
 public function store(Request $request)
 {
     //
+    $user=Auth::user();
+     $id=Auth::id();
+
+
+
+
     $score = 0;
     $questions = $request->option;
     $perfectanswer=0;
@@ -236,6 +302,15 @@ public function store(Request $request)
                 $wronganswer=$wronganswer+1;
             }}
         }
+
+        $points=point::where('student_id',$user->student->id)->first();
+        $points->points= $points->points+$fullpoint*2;
+        $points->save();
+        if($points->points>100){
+            $badge=badge::where(['student_id'=>$user->student->id,'name'=>'removeoption'])->first();
+$badge->count=$badge->count+1;
+$badge->save();
+        }
         $result = new Result();
         $result->user_id = Auth::user()->id;
         $result->quiz_id = $request->input('quiz_id');
@@ -258,6 +333,18 @@ public function store(Request $request)
                 $userOption->save();
             }
         }
+        $remove=badge::where(['student_id'=>$user->student->id,'name'=>'removeoption'])->first();
+        $hints=badge::where(['student_id'=>$user->student->id,'name'=>'hint'])->first();
+        $remove->count=$request->remove_option;
+        $remove->save();
+        $hints->count=$request->hint_option;
+        $hints->save();
+        $points=point::where(['student_id'=>$user->student->id])->first();
+        $points->points=$request->point_count;
+        $points->save();
+
+
+
 
         return redirect(route('results.show', $result->id));
         } else {

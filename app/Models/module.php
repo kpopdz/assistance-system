@@ -5,7 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Quiz2 extends Model
+class module extends Model
 {
     use HasFactory;
+    protected $table="module";
+
+    public $timestamps = false;
 }

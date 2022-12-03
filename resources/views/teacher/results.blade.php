@@ -52,7 +52,13 @@ background-size: 115px 115px, 115px 115px, 57.5px 57.5px, 57.5px 57.5px;} */
             <div class="card">
               <img src="{{ url('icons/aqua-d9b59c89.png')}}" alt="Cover" class="card-img-top size-back-image">
               <div class="card-body text-center">
+                @if ($item->user->avatar==null)
                 <img src="{{ url('icons/person.svg')}}" style="width:100px;margin-top:-65px" alt="User" class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
+
+                @else
+                <img src="{{ url($item->user->avatar)}}" style="width:100px;margin-top:-65px" alt="User" class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
+
+                @endif
                 <h5 class="card-title">{{$item->user->student->firstname}} {{$item->user->student->lastname}}</h5>
                 <p class="text-secondary mb-1">{{$item->class_name}}</p>
                 <h5>points earned from quiz</h5>
